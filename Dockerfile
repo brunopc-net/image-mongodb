@@ -36,38 +36,34 @@ RUN set -eux; \
 RUN set -eux; \
 	\
 	savedAptMark="$(apt-mark showmanual)"; \
-	apt-get update && apt-get install -y --no-install-recommends \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
 		gnupg \
 		wget \
 	; \
-	rm -rf /var/lib/apt/lists/*;
-
+	rm -rf /var/lib/apt/lists/*; \
+	\
 # grab gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
-RUN set -eux; 
-RUN wget -O /usr/local/bin/gosu $GOSU_DOWNLOAD_URL; 
-RUN wget -O /usr/local/bin/gosu.asc "$GOSU_DOWNLOAD_URL.asc"; 
-RUN export GNUPGHOME="$(mktemp -d)"; 
-RUN gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; 
-RUN gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; 
-RUN gpgconf --kill all;
-
-# smoke test
-RUN set -eux; \
+	wget -O /usr/local/bin/gosu $GOSU_DOWNLOAD_URL; \
+	wget -O /usr/local/bin/gosu.asc "$GOSU_DOWNLOAD_URL.asc"; \
+	export GNUPGHOME="$(mktemp -d)"; \
+	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
+	gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
+	gpgconf --kill all; \
+	# smoke test
 	chmod +x /usr/local/bin/gosu; \
 	gosu --version; \
-	gosu nobody true; \
-	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc;
-
+	gosu nobody true \
+	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
+	\
 # grab "js-yaml" for parsing mongod's YAML config files (https://github.com/nodeca/js-yaml/releases)
-RUN set -eux; \
 	mkdir -p /opt/js-yaml/; \
 	wget -O /opt/js-yaml/js-yaml.tgz ${JSYAML_DOWNLOAD_URL}; \
 	echo "$JSYAML_CHECKSUM */opt/js-yaml/js-yaml.tgz" | sha256sum -c -; \
 	tar -xz --strip-components=1 -f /opt/js-yaml/js-yaml.tgz -C /opt/js-yaml package/dist/js-yaml.js package/package.json; \
 	rm /opt/js-yaml/js-yaml.tgz; \
-	ln -s /opt/js-yaml/dist/js-yaml.js /js-yaml.js;
-
-RUN set -eux; \
+	ln -s /opt/js-yaml/dist/js-yaml.js /js-yaml.js; \
+	\
 # download/install MongoDB PGP keys
 	export GNUPGHOME="$(mktemp -d)"; \
 	wget -O KEYS ${MONGO_PGPKEY_URL}; \
@@ -75,9 +71,8 @@ RUN set -eux; \
 	mkdir -p /etc/apt/keyrings; \
 	gpg --batch --export --armor ${MONGO_PGPKEY_FINGERPRINT} > /etc/apt/keyrings/mongodb.asc; \
 	gpgconf --kill all; \
-	rm -rf "$GNUPGHOME" KEYS;
-
-RUN set -eux; \
+	rm -rf "$GNUPGHOME" KEYS; \
+	\
 	apt-mark auto '.*' > /dev/null; \
 	apt-mark manual $savedAptMark > /dev/null; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
@@ -87,6 +82,13 @@ RUN set -eux; \
 	dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n;
 
 RUN mkdir /docker-entrypoint-initdb.d
+
+# Allow build-time overrides (eg. to build image with MongoDB Enterprise version)
+# Options for MONGO_PACKAGE: mongodb-org OR mongodb-enterprise
+# Options for MONGO_REPO: repo.mongodb.org OR repo.mongodb.com
+# Example: docker build --build-arg MONGO_PACKAGE=mongodb-enterprise --build-arg MONGO_REPO=repo.mongodb.com .
+ENV MONGO_PACKAGE=${MONGO_PACKAGE} \
+	MONGO_REPO=${MONGO_REPO}
 
 RUN set -x \
 # installing "mongodb-enterprise" pulls in "tzdata" which prompts for input
