@@ -92,10 +92,12 @@ ENV MONGO_PACKAGE=${MONGO_PACKAGE} \
 
 RUN set -x \
 # installing "mongodb-enterprise" pulls in "tzdata" which prompts for input
-	&& echo "deb [ signed-by=/etc/apt/keyrings/mongodb.asc ] http://$MONGO_REPO/apt/ubuntu noble/${MONGO_PACKAGE%-unstable}/$MONGO_MAJOR multiverse" \
-	   | tee "/etc/apt/sources.list.d/${MONGO_PACKAGE%-unstable}.list" \
+	&& wget -qO- "https://www.mongodb.org/static/pgp/server-${MONGO_MAJOR}.asc" | sudo tee "/etc/apt/trusted.gpg.d/server-${MONGO_MAJOR}.asc" \
+	&& echo "deb [ signed-by=/etc/apt/keyrings/mongodb.asc ] http://$MONGO_REPO/apt/ubuntu noble/${MONGO_PACKAGE}/$MONGO_MAJOR multiverse" \
+	   | tee "/etc/apt/sources.list.d/${MONGO_PACKAGE}.list" \
 	&& export DEBIAN_FRONTEND=noninteractive \
 	&& apt-get update && apt-get install -y \
+		mongodb-mongosh \
 		${MONGO_PACKAGE}=$MONGO_VERSION \
 		${MONGO_PACKAGE}-server=$MONGO_VERSION \
 		${MONGO_PACKAGE}-shell=$MONGO_VERSION \
