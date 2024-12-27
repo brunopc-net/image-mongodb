@@ -43,14 +43,16 @@ RUN set -eux; \
 	rm -rf /var/lib/apt/lists/*;
 
 # grab gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
+RUN set -eux; 
+RUN wget -O /usr/local/bin/gosu $GOSU_DOWNLOAD_URL; 
+RUN wget -O /usr/local/bin/gosu.asc "$GOSU_DOWNLOAD_URL.asc"; 
+RUN export GNUPGHOME="$(mktemp -d)"; 
+RUN gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; 
+RUN gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; 
+RUN gpgconf --kill all;
+
+# smoke test
 RUN set -eux; \
-	wget -O /usr/local/bin/gosu $GOSU_DOWNLOAD_URL; \
-	wget -O /usr/local/bin/gosu.asc "$GOSU_DOWNLOAD_URL.asc"; \
-	export GNUPGHOME="$(mktemp -d)"; \
-	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
-	gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
-	gpgconf --kill all; \
-	# smoke test
 	chmod +x /usr/local/bin/gosu; \
 	gosu --version; \
 	gosu nobody true; \
