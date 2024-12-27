@@ -98,8 +98,7 @@ RUN set -eux \
 		login \
 		util-linux \
 		sysvinit-utils \
-		findutils \
-		#krb5-locales \
+		#findutils \
     && apt-get clean
 
 VOLUME /data/db /data/configdb
