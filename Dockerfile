@@ -11,6 +11,7 @@ ARG MONGO_PACKAGE=mongodb-org
 ARG MONGO_REPO=repo.mongodb.org
 
 ARG GOSU_VERSION=1.17
+ARG GOSU_PGPKEY_FINGERPRINT=B42F6819007F00F88E364FD4036A9C25BF357DD4
 ARG GOSU_DOWNLOAD_URL=https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64
 
 ARG JSYAML_VERSION=3.13.1
@@ -40,7 +41,7 @@ RUN set -eux \
 	&& wget -O /usr/local/bin/gosu $GOSU_DOWNLOAD_URL \
 	&& wget -O /usr/local/bin/gosu.asc "$GOSU_DOWNLOAD_URL.asc" \
 	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
+	&& gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys ${GOSU_PGPKEY_FINGERPRINT} \
 	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
 	&& gpgconf --kill all \
 	&& chmod +x /usr/local/bin/gosu \
@@ -68,8 +69,6 @@ RUN set -eux \
 	&& gpgconf --kill all \
 	&& rm -rf "$GNUPGHOME" KEYS \
 	# Installation
-	&& wget -qO- "https://www.mongodb.org/static/pgp/server-${MONGO_MAJOR}.asc" \
-		| tee "/etc/apt/trusted.gpg.d/server-${MONGO_MAJOR}.asc" \
 	&& echo "deb [ signed-by=/etc/apt/keyrings/mongodb.asc ] http://$MONGO_REPO/apt/ubuntu noble/${MONGO_PACKAGE}/$MONGO_MAJOR multiverse" \
 		| tee "/etc/apt/sources.list.d/${MONGO_PACKAGE}.list" \
 	&& apt-get update && apt-get install -y \
@@ -98,7 +97,6 @@ RUN set -eux \
 		login \
 		util-linux \
 		sysvinit-utils \
-		#findutils \
     && apt-get clean
 
 VOLUME /data/db /data/configdb
