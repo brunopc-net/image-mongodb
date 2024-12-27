@@ -33,30 +33,28 @@ RUN set -eux; \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
+# Dependencies
 RUN set -eux; \
-	\
 	savedAptMark="$(apt-mark showmanual)"; \
-	apt-get update; \
-	apt-get install -y --no-install-recommends \
+	apt-get update && apt-get install -y --no-install-recommends \
 		gnupg \
 		wget \
 	; \
 	rm -rf /var/lib/apt/lists/*; \
 	\
-# grab gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
+	# gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
 	wget -O /usr/local/bin/gosu $GOSU_DOWNLOAD_URL; \
 	wget -O /usr/local/bin/gosu.asc "$GOSU_DOWNLOAD_URL.asc"; \
 	export GNUPGHOME="$(mktemp -d)"; \
 	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
 	gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
 	gpgconf --kill all; \
-	# smoke test
 	chmod +x /usr/local/bin/gosu; \
 	gosu --version; \
 	gosu nobody true \
 	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
 	\
-# grab "js-yaml" for parsing mongod's YAML config files (https://github.com/nodeca/js-yaml/releases)
+	# js-yaml for parsing mongod's YAML config files (https://github.com/nodeca/js-yaml/releases)
 	mkdir -p /opt/js-yaml/; \
 	wget -O /opt/js-yaml/js-yaml.tgz ${JSYAML_DOWNLOAD_URL}; \
 	echo "$JSYAML_CHECKSUM */opt/js-yaml/js-yaml.tgz" | sha256sum -c -; \
@@ -64,26 +62,18 @@ RUN set -eux; \
 	rm /opt/js-yaml/js-yaml.tgz; \
 	ln -s /opt/js-yaml/dist/js-yaml.js /js-yaml.js; \
 	\
-# download/install MongoDB PGP keys
+	# MongoDB PGP keys
 	export GNUPGHOME="$(mktemp -d)"; \
 	wget -O KEYS ${MONGO_PGPKEY_URL}; \
 	gpg --batch --import KEYS; \
 	mkdir -p /etc/apt/keyrings; \
 	gpg --batch --export --armor ${MONGO_PGPKEY_FINGERPRINT} > /etc/apt/keyrings/mongodb.asc; \
 	gpgconf --kill all; \
-	rm -rf "$GNUPGHOME" KEYS; \
-	\
-	apt-mark auto '.*' > /dev/null; \
-	apt-mark manual $savedAptMark > /dev/null; \
-	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
-	\
-# smoke test
-	echo "WWWWWWWWWWWWWWWWWWWWWWWW ${savedAptMark} WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"; \
-	dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n;
+	rm -rf "$GNUPGHOME" KEYS;
 
-RUN mkdir /docker-entrypoint-initdb.d
-
-RUN set -x \
+# Mongo
+RUN set -eux \
+	&& mkdir /docker-entrypoint-initdb.d \
 	&& wget -qO- "https://www.mongodb.org/static/pgp/server-${MONGO_MAJOR}.asc" \
 		| tee "/etc/apt/trusted.gpg.d/server-${MONGO_MAJOR}.asc" \
 	&& echo "deb [ signed-by=/etc/apt/keyrings/mongodb.asc ] http://$MONGO_REPO/apt/ubuntu noble/${MONGO_PACKAGE}/$MONGO_MAJOR multiverse" \
@@ -101,23 +91,25 @@ RUN set -x \
 	&& rm -rf /var/lib/apt/lists/* /var/lib/mongodb \
 	&& mv /etc/mongod.conf /etc/mongod.conf.orig
 
-# Removing irrelevent linux packages
-RUN set -x \
+# Cleaning
+RUN set -eux \
     && apt-get purge -y --auto-remove --allow-remove-essential \
-        #wget \
-        #gnupg \
+        wget \
+        gnupg \
+		jq \
         perl-base \
-        # dpkg \
-        # util-linux \
-        # libapt-pkg6.0t64 \
-        # passwd \
-        # libgnutls30t64 \
-        # procps \
-        # libdb5.3t64 \
-        # libp11-kit0 \
-        # e2fsprogs \
-        # libpam-modules \
-        # libsystemd0 \
+		hostname \
+		sed \
+		grep \
+		e2fsprogs \
+		logsave \
+		login \
+		util-linux \
+		sysvinit-utils \
+		findutils \
+		bsdutils \
+		sensible-utils \
+		krb5-locales \
     && apt-get clean
 
 VOLUME /data/db /data/configdb
