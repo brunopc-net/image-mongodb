@@ -53,7 +53,7 @@ RUN set -eux; \
 	# smoke test
 	chmod +x /usr/local/bin/gosu; \
 	gosu --version; \
-	gosu nobody true \
+	gosu nobody true; \
 	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc;
 
 # grab "js-yaml" for parsing mongod's YAML config files (https://github.com/nodeca/js-yaml/releases)
