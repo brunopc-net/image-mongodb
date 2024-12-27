@@ -102,9 +102,9 @@ RUN set -eux \
 		sed \
 		grep \
 		e2fsprogs \
-		# logsave \
-		# login \
-		# util-linux \
+		logsave \
+		login \
+		util-linux \
 		# sysvinit-utils \
 		# findutils \
 		# bsdutils \
