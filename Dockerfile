@@ -54,20 +54,20 @@ RUN set -eux \
 	&& echo "$JSYAML_CHECKSUM */opt/js-yaml/js-yaml.tgz" | sha256sum -c - \
 	&& tar -xz --strip-components=1 -f /opt/js-yaml/js-yaml.tgz -C /opt/js-yaml package/dist/js-yaml.js package/package.json \
 	&& rm /opt/js-yaml/js-yaml.tgz \
-	&& ln -s /opt/js-yaml/dist/js-yaml.js /js-yaml.js \
-	\
-	# MongoDB PGP keys
+	&& ln -s /opt/js-yaml/dist/js-yaml.js /js-yaml.js
+
+# Mongo
+RUN set -eux \
+	&& mkdir /docker-entrypoint-initdb.d \
+	# PGP Keys
 	&& export GNUPGHOME="$(mktemp -d)" \
 	&& wget -O KEYS ${MONGO_PGPKEY_URL} \
 	&& gpg --batch --import KEYS \
 	&& mkdir -p /etc/apt/keyrings \
 	&& gpg --batch --export --armor ${MONGO_PGPKEY_FINGERPRINT} > /etc/apt/keyrings/mongodb.asc \
 	&& gpgconf --kill all \
-	&& rm -rf "$GNUPGHOME" KEYS
-
-# Mongo
-RUN set -eux \
-	&& mkdir /docker-entrypoint-initdb.d \
+	&& rm -rf "$GNUPGHOME" KEYS \
+	# Installation
 	&& wget -qO- "https://www.mongodb.org/static/pgp/server-${MONGO_MAJOR}.asc" \
 		| tee "/etc/apt/trusted.gpg.d/server-${MONGO_MAJOR}.asc" \
 	&& echo "deb [ signed-by=/etc/apt/keyrings/mongodb.asc ] http://$MONGO_REPO/apt/ubuntu noble/${MONGO_PACKAGE}/$MONGO_MAJOR multiverse" \
@@ -99,9 +99,7 @@ RUN set -eux \
 		util-linux \
 		sysvinit-utils \
 		findutils \
-		# bsdutils \
-		#sensible-utils \
-		krb5-locales \
+		#krb5-locales \
     && apt-get clean
 
 VOLUME /data/db /data/configdb
