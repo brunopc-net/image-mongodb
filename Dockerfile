@@ -95,9 +95,9 @@ RUN set -eux \
 		grep \
 		e2fsprogs \
 		logsave \
-		# login \
-		# util-linux \
-		# sysvinit-utils \
+		login \
+		util-linux \
+		sysvinit-utils \
 		# findutils \
 		# bsdutils \
 		# sensible-utils \
