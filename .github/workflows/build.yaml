@@ -16,10 +16,9 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-      
+
     - name: Build MongoDB Docker image
       run: |
-        # Assuming the Dockerfile for MongoDB is located in a directory called `mongodb` within the repo
         docker build -t mongodb .
     
     - name: Start MongoDB container

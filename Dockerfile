@@ -40,9 +40,10 @@ RUN set -eux; \
 		gnupg \
 		wget \
 	; \
-	rm -rf /var/lib/apt/lists/*; \
-	\
+	rm -rf /var/lib/apt/lists/*;
+
 # grab gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
+RUN set -eux; \
 	wget -O /usr/local/bin/gosu $GOSU_DOWNLOAD_URL; \
 	wget -O /usr/local/bin/gosu.asc "$GOSU_DOWNLOAD_URL.asc"; \
 	export GNUPGHOME="$(mktemp -d)"; \
@@ -53,16 +54,18 @@ RUN set -eux; \
 	chmod +x /usr/local/bin/gosu; \
 	gosu --version; \
 	gosu nobody true \
-	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
-	\
+	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc;
+
 # grab "js-yaml" for parsing mongod's YAML config files (https://github.com/nodeca/js-yaml/releases)
+RUN set -eux; \
 	mkdir -p /opt/js-yaml/; \
 	wget -O /opt/js-yaml/js-yaml.tgz ${JSYAML_DOWNLOAD_URL}; \
 	echo "$JSYAML_CHECKSUM */opt/js-yaml/js-yaml.tgz" | sha256sum -c -; \
 	tar -xz --strip-components=1 -f /opt/js-yaml/js-yaml.tgz -C /opt/js-yaml package/dist/js-yaml.js package/package.json; \
 	rm /opt/js-yaml/js-yaml.tgz; \
-	ln -s /opt/js-yaml/dist/js-yaml.js /js-yaml.js; \
-	\
+	ln -s /opt/js-yaml/dist/js-yaml.js /js-yaml.js;
+
+RUN set -eux; \
 # download/install MongoDB PGP keys
 	export GNUPGHOME="$(mktemp -d)"; \
 	wget -O KEYS ${MONGO_PGPKEY_URL}; \
@@ -70,8 +73,9 @@ RUN set -eux; \
 	mkdir -p /etc/apt/keyrings; \
 	gpg --batch --export --armor ${MONGO_PGPKEY_FINGERPRINT} > /etc/apt/keyrings/mongodb.asc; \
 	gpgconf --kill all; \
-	rm -rf "$GNUPGHOME" KEYS; \
-	\
+	rm -rf "$GNUPGHOME" KEYS;
+
+RUN set -eux; \
 	apt-mark auto '.*' > /dev/null; \
 	apt-mark manual $savedAptMark > /dev/null; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
