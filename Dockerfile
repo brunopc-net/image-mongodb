@@ -90,12 +90,9 @@ RUN mkdir /docker-entrypoint-initdb.d
 ENV MONGO_PACKAGE=${MONGO_PACKAGE} \
 	MONGO_REPO=${MONGO_REPO}
 
-RUN wget -qO- "https://www.mongodb.org/static/pgp/server-${MONGO_MAJOR}.asc" \
-| tee "/etc/apt/trusted.gpg.d/server-${MONGO_MAJOR}.asc"
-
 RUN set -x \
-	# && wget -qO- "https://www.mongodb.org/static/pgp/server-${MONGO_MAJOR}.asc" \
-	# 	| tee "/etc/apt/trusted.gpg.d/server-${MONGO_MAJOR}.asc" \
+	&& wget -qO- "https://www.mongodb.org/static/pgp/server-${MONGO_MAJOR}.asc" \
+		| tee "/etc/apt/trusted.gpg.d/server-${MONGO_MAJOR}.asc" \
 	&& echo "deb [ signed-by=/etc/apt/keyrings/mongodb.asc ] http://$MONGO_REPO/apt/ubuntu noble/${MONGO_PACKAGE}/$MONGO_MAJOR multiverse" \
 		| tee "/etc/apt/sources.list.d/${MONGO_PACKAGE}.list" \
 	&& export DEBIAN_FRONTEND=noninteractive \
