@@ -1,0 +1,66 @@
+name: Build and Test with MongoDB
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build MongoDB Docker image
+      run: |
+        # Assuming the Dockerfile for MongoDB is located in a directory called `mongodb` within the repo
+        docker build -t mongodb .
+    
+    - name: Start MongoDB container
+      run: |
+        docker run -d \
+            --name mongodb-container \
+            -p 27017:27017 \
+            --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'" \
+            --health-interval 10s \
+            --health-timeout 5s \
+            --health-retries 3 \
+        mongodb
+
+    - name: Wait for MongoDB to be ready
+      run: |
+        for i in {1..30}; do
+          if docker inspect --format='{{json .State.Health.Status}}' mongodb-container | grep -q '"healthy"'; then
+            echo "MongoDB is ready!";
+            break;
+          fi;
+          echo "Waiting for MongoDB...";
+          sleep 1;
+        done
+        if [ $i -eq 30 ]; then
+          echo "MongoDB did not become healthy in time";
+          exit 1;
+        fi
+
+    - name: Run smoke tests
+      run: |
+        echo "Testing MongoDB connection..."
+        mongosh --eval 'db.runCommand({ ping: 1 })' || exit 1
+
+        echo "Inserting test data..."
+        mongosh --eval 'db.test.insertOne({ name: "test", value: 123 })' || exit 1
+
+        echo "Verifying test data..."
+        mongosh --eval 'const count = db.test.countDocuments({ name: "test" }); if (count !== 1) { throw new Error("Inserting data failed"); }' || exit 1
+
+        echo "Smoke tests passed!"
+
+    - name: Post-run cleanup
+      if: always()
+      run: |
+        echo "Stopping MongoDB container..."
+        docker stop mongodb-container || true
+        docker rm mongodb-container || true
