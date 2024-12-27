@@ -50,13 +50,13 @@ jobs:
     - name: Run smoke tests
       run: |
         echo "Testing MongoDB connection..."
-        mongosh --eval 'db.runCommand({ ping: 1 })' || exit 1
+        docker exec mongodb-container mongo --eval 'db.runCommand({ ping: 1 })' || exit 1
 
         echo "Inserting test data..."
-        mongosh --eval 'db.test.insertOne({ name: "test", value: 123 })' || exit 1
+        docker exec mongodb-container mongo --eval 'db.test.insertOne({ name: "test", value: 123 })' || exit 1
 
         echo "Verifying test data..."
-        mongosh --eval 'const count = db.test.countDocuments({ name: "test" }); if (count !== 1) { throw new Error("Inserting data failed"); }' || exit 1
+        docker exec mongodb-container mongo --eval 'const count = db.test.countDocuments({ name: "test" }); if (count !== 1) { throw new Error("Inserting data failed"); }' || exit 1
 
         echo "Smoke tests passed!"
 
