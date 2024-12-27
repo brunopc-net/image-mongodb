@@ -90,11 +90,11 @@ RUN set -eux \
         wget \
         gnupg \
         perl-base \
-		# hostname \
-		# sed \
-		# grep \
-		# e2fsprogs \
-		# logsave \
+		hostname \
+		sed \
+		grep \
+		e2fsprogs \
+		logsave \
 		# login \
 		# util-linux \
 		# sysvinit-utils \
