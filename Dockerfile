@@ -31,7 +31,7 @@ RUN set -eux \
 		# Will be in the final image - pinning version
 		ca-certificates=20240203 \
 		numactl=2.0.18-1build1 \
-		# Not in the final image
+		# Not in the final image - no pinning required
 		gnupg \
 		wget \
 	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
@@ -100,8 +100,8 @@ RUN set -eux \
 		sysvinit-utils \
 		findutils \
 		# bsdutils \
-		sensible-utils \
-		# krb5-locales \
+		#sensible-utils \
+		krb5-locales \
     && apt-get clean
 
 VOLUME /data/db /data/configdb
