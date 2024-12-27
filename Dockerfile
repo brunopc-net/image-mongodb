@@ -83,13 +83,6 @@ RUN set -eux; \
 
 RUN mkdir /docker-entrypoint-initdb.d
 
-# Allow build-time overrides (eg. to build image with MongoDB Enterprise version)
-# Options for MONGO_PACKAGE: mongodb-org OR mongodb-enterprise
-# Options for MONGO_REPO: repo.mongodb.org OR repo.mongodb.com
-# Example: docker build --build-arg MONGO_PACKAGE=mongodb-enterprise --build-arg MONGO_REPO=repo.mongodb.com .
-ENV MONGO_PACKAGE=${MONGO_PACKAGE} \
-	MONGO_REPO=${MONGO_REPO}
-
 RUN set -x \
 	&& wget -qO- "https://www.mongodb.org/static/pgp/server-${MONGO_MAJOR}.asc" \
 		| tee "/etc/apt/trusted.gpg.d/server-${MONGO_MAJOR}.asc" \
@@ -105,9 +98,27 @@ RUN set -x \
 		${MONGO_PACKAGE}-tools=$MONGO_VERSION \
 		${MONGO_PACKAGE}-database=$MONGO_VERSION \
 		${MONGO_PACKAGE}-database-tools-extra=$MONGO_VERSION \
-	&& rm -rf /var/lib/apt/lists/* \
-	&& rm -rf /var/lib/mongodb \
+	&& rm -rf /var/lib/apt/lists/* /var/lib/mongodb \
 	&& mv /etc/mongod.conf /etc/mongod.conf.orig
+
+# Removing irrelevent linux packages
+RUN set -x \
+    && apt-get purge -y --auto-remove --allow-remove-essential \
+        #wget \
+        #gnupg \
+        perl-base \
+        # dpkg \
+        # util-linux \
+        # libapt-pkg6.0t64 \
+        # passwd \
+        # libgnutls30t64 \
+        # procps \
+        # libdb5.3t64 \
+        # libp11-kit0 \
+        # e2fsprogs \
+        # libpam-modules \
+        # libsystemd0 \
+    && apt-get clean
 
 VOLUME /data/db /data/configdb
 
