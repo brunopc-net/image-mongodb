@@ -102,14 +102,14 @@ RUN set -eux \
 		sed \
 		grep \
 		e2fsprogs \
-		logsave \
-		login \
-		util-linux \
-		sysvinit-utils \
-		findutils \
-		bsdutils \
-		sensible-utils \
-		krb5-locales \
+		# logsave \
+		# login \
+		# util-linux \
+		# sysvinit-utils \
+		# findutils \
+		# bsdutils \
+		# sensible-utils \
+		# krb5-locales \
     && apt-get clean
 
 VOLUME /data/db /data/configdb
