@@ -16,53 +16,54 @@ ARG GOSU_DOWNLOAD_URL=https://github.com/tianon/gosu/releases/download/${GOSU_VE
 ARG JSYAML_VERSION=3.13.1
 ARG JSYAML_CHECKSUM=662e32319bdd378e91f67578e56a34954b0a2e33aca11d70ab9f4826af24b941
 ARG JSYAML_DOWNLOAD_URL=https://registry.npmjs.org/js-yaml/-/js-yaml-${JSYAML_VERSION}.tgz
-	
-# add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
-RUN set -eux; \
-	groupadd --gid 999 --system mongodb; \
-	useradd --uid 999 --system --gid mongodb --home-dir /data/db mongodb; \
-	mkdir -p /data/db /data/configdb; \
-	chown -R mongodb:mongodb /data/db /data/configdb
 
 # Dependencies
-RUN set -eux; \
-	apt-get update && apt-get install -y --no-install-recommends \
+RUN set -eux \
+	\
+	# Add user/group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
+	&& groupadd --gid 999 --system mongodb \
+	&& useradd --uid 999 --system --gid mongodb --home-dir /data/db mongodb \
+	&& mkdir -p /data/db /data/configdb \
+	&& chown -R mongodb:mongodb /data/db /data/configdb \
+	\
+	# Adding required packages
+	&& apt-get update && apt-get install -y --no-install-recommends \
+		# Will be in the final image - pinning version
 		ca-certificates=20240203 \
 		numactl=2.0.18-1build1 \
-		# Not in the final image - not pinning
+		# Not in the final image
 		gnupg \
 		wget \
-	; \
-	rm -rf /var/lib/apt/lists/*; \
+	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
 	\
 	# gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
-	wget -O /usr/local/bin/gosu $GOSU_DOWNLOAD_URL; \
-	wget -O /usr/local/bin/gosu.asc "$GOSU_DOWNLOAD_URL.asc"; \
-	export GNUPGHOME="$(mktemp -d)"; \
-	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
-	gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
-	gpgconf --kill all; \
-	chmod +x /usr/local/bin/gosu; \
-	gosu --version; \
-	gosu nobody true \
-	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
+	&& wget -O /usr/local/bin/gosu $GOSU_DOWNLOAD_URL \
+	&& wget -O /usr/local/bin/gosu.asc "$GOSU_DOWNLOAD_URL.asc" \
+	&& export GNUPGHOME="$(mktemp -d)" \
+	&& gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
+	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
+	&& gpgconf --kill all \
+	&& chmod +x /usr/local/bin/gosu \
+	&& gosu --version \
+	&& gosu nobody true \
+	&& rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc \
 	\
 	# js-yaml for parsing mongod's YAML config files (https://github.com/nodeca/js-yaml/releases)
-	mkdir -p /opt/js-yaml/; \
-	wget -O /opt/js-yaml/js-yaml.tgz ${JSYAML_DOWNLOAD_URL}; \
-	echo "$JSYAML_CHECKSUM */opt/js-yaml/js-yaml.tgz" | sha256sum -c -; \
-	tar -xz --strip-components=1 -f /opt/js-yaml/js-yaml.tgz -C /opt/js-yaml package/dist/js-yaml.js package/package.json; \
-	rm /opt/js-yaml/js-yaml.tgz; \
-	ln -s /opt/js-yaml/dist/js-yaml.js /js-yaml.js; \
+	&& mkdir -p /opt/js-yaml/ \
+	&& wget -O /opt/js-yaml/js-yaml.tgz ${JSYAML_DOWNLOAD_URL} \
+	&& echo "$JSYAML_CHECKSUM */opt/js-yaml/js-yaml.tgz" | sha256sum -c - \
+	&& tar -xz --strip-components=1 -f /opt/js-yaml/js-yaml.tgz -C /opt/js-yaml package/dist/js-yaml.js package/package.json \
+	&& rm /opt/js-yaml/js-yaml.tgz \
+	&& ln -s /opt/js-yaml/dist/js-yaml.js /js-yaml.js \
 	\
 	# MongoDB PGP keys
-	export GNUPGHOME="$(mktemp -d)"; \
-	wget -O KEYS ${MONGO_PGPKEY_URL}; \
-	gpg --batch --import KEYS; \
-	mkdir -p /etc/apt/keyrings; \
-	gpg --batch --export --armor ${MONGO_PGPKEY_FINGERPRINT} > /etc/apt/keyrings/mongodb.asc; \
-	gpgconf --kill all; \
-	rm -rf "$GNUPGHOME" KEYS;
+	&& export GNUPGHOME="$(mktemp -d)" \
+	&& wget -O KEYS ${MONGO_PGPKEY_URL} \
+	&& gpg --batch --import KEYS \
+	&& mkdir -p /etc/apt/keyrings \
+	&& gpg --batch --export --armor ${MONGO_PGPKEY_FINGERPRINT} > /etc/apt/keyrings/mongodb.asc \
+	&& gpgconf --kill all \
+	&& rm -rf "$GNUPGHOME" KEYS
 
 # Mongo
 RUN set -eux \
@@ -71,7 +72,6 @@ RUN set -eux \
 		| tee "/etc/apt/trusted.gpg.d/server-${MONGO_MAJOR}.asc" \
 	&& echo "deb [ signed-by=/etc/apt/keyrings/mongodb.asc ] http://$MONGO_REPO/apt/ubuntu noble/${MONGO_PACKAGE}/$MONGO_MAJOR multiverse" \
 		| tee "/etc/apt/sources.list.d/${MONGO_PACKAGE}.list" \
-	&& export DEBIAN_FRONTEND=noninteractive \
 	&& apt-get update && apt-get install -y \
 		mongodb-mongosh \
 		${MONGO_PACKAGE}=$MONGO_VERSION \
@@ -81,7 +81,7 @@ RUN set -eux \
 		${MONGO_PACKAGE}-tools=$MONGO_VERSION \
 		${MONGO_PACKAGE}-database=$MONGO_VERSION \
 		${MONGO_PACKAGE}-database-tools-extra=$MONGO_VERSION \
-	&& rm -rf /var/lib/apt/lists/* /var/lib/mongodb \
+	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/lib/mongodb\
 	&& mv /etc/mongod.conf /etc/mongod.conf.orig
 
 # Cleaning
@@ -90,18 +90,18 @@ RUN set -eux \
         wget \
         gnupg \
         perl-base \
-		hostname \
-		sed \
-		grep \
-		e2fsprogs \
-		logsave \
-		login \
-		util-linux \
-		sysvinit-utils \
-		findutils \
-		bsdutils \
-		sensible-utils \
-		krb5-locales \
+		# hostname \
+		# sed \
+		# grep \
+		# e2fsprogs \
+		# logsave \
+		# login \
+		# util-linux \
+		# sysvinit-utils \
+		# findutils \
+		# bsdutils \
+		# sensible-utils \
+		# krb5-locales \
     && apt-get clean
 
 VOLUME /data/db /data/configdb
