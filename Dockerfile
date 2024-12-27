@@ -98,7 +98,7 @@ RUN set -eux \
 		login \
 		util-linux \
 		sysvinit-utils \
-		# findutils \
+		findutils \
 		# bsdutils \
 		# sensible-utils \
 		# krb5-locales \
