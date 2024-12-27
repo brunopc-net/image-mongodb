@@ -100,7 +100,7 @@ RUN set -eux \
 		sysvinit-utils \
 		findutils \
 		# bsdutils \
-		# sensible-utils \
+		sensible-utils \
 		# krb5-locales \
     && apt-get clean
 
