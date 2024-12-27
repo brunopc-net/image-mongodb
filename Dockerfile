@@ -24,19 +24,12 @@ RUN set -eux; \
 	mkdir -p /data/db /data/configdb; \
 	chown -R mongodb:mongodb /data/db /data/configdb
 
-RUN set -eux; \
-	apt-get update; \
-	apt-get install -y --no-install-recommends \
-		ca-certificates=20240203 \
-		jq=1.7.1-3build1 \
-		numactl=2.0.18-1build1 \
-	; \
-	rm -rf /var/lib/apt/lists/*
-
 # Dependencies
 RUN set -eux; \
-	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update && apt-get install -y --no-install-recommends \
+		ca-certificates=20240203 \
+		numactl=2.0.18-1build1 \
+		# Not in the final image - not pinning
 		gnupg \
 		wget \
 	; \
@@ -96,7 +89,6 @@ RUN set -eux \
     && apt-get purge -y --auto-remove --allow-remove-essential \
         wget \
         gnupg \
-		jq \
         perl-base \
 		hostname \
 		sed \
@@ -105,11 +97,11 @@ RUN set -eux \
 		logsave \
 		login \
 		util-linux \
-		# sysvinit-utils \
-		# findutils \
-		# bsdutils \
-		# sensible-utils \
-		# krb5-locales \
+		sysvinit-utils \
+		findutils \
+		bsdutils \
+		sensible-utils \
+		krb5-locales \
     && apt-get clean
 
 VOLUME /data/db /data/configdb
