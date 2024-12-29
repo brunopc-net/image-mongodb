@@ -25,7 +25,7 @@ jobs:
 
     - name: Build MongoDB Docker image
       run: |
-        docker build -t mongodb .
+        docker --build-arg MONGO_VERSION=$VERSION build -t mongodb:$VERSION .
     
     - name: Start MongoDB container
       run: |
@@ -76,7 +76,7 @@ jobs:
       with:
         image-ref: mongodb:latest
         format: template
-        template: '{{- $vuln := 0 }}{{- range . }}{{- range .Vulnerabilities }}{{- $vuln = add $vuln 1 }}{{- end }}{{- end }}Severe vulnerabilities: {{ $vuln }}'
+        template: '{{- $vuln := 0 -}}{{- range . }}{{- range .Vulnerabilities }}{{- $vuln = (add $vuln 1) -}}{{- end }}{{- end }}Severe vulnerabilities: {{ $vuln }}'
         severity: 'CRITICAL,HIGH'
 
     - name: Post-run cleanup

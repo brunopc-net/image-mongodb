@@ -1,7 +1,7 @@
 # Base taken from https://github.com/docker-library/mongo/blob/master/8.0/Dockerfile
 FROM ubuntu:noble-20241118.1
 
-ARG MONGO_VERSION=8.0.4
+ARG MONGO_VERSION
 ARG MONGO_MAJOR="${MONGO_VERSION%.*}"
 ARG MONGO_PGPKEY_FINGERPRINT=4B0752C1BCA238C0B4EE14DC41DE058A4E7DCA05
 ARG MONGO_PGPKEY_URL=https://pgp.mongodb.com/server-${MONGO_MAJOR}.asc
