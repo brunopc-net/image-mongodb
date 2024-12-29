@@ -10,6 +10,7 @@ ARG MONGO_PACKAGE=mongodb-org
 # Options for MONGO_REPO: repo.mongodb.org OR repo.mongodb.com
 ARG MONGO_REPO=repo.mongodb.org
 
+# REPLACED WITH USER COMMAND
 ARG GOSU_VERSION=1.17
 ARG GOSU_PGPKEY_FINGERPRINT=B42F6819007F00F88E364FD4036A9C25BF357DD4
 ARG GOSU_DOWNLOAD_URL=https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64
@@ -37,6 +38,7 @@ RUN set -eux \
 		wget \
 	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
 	\
+	# REPLACED WITH USER COMMAND
 	# gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
 	&& wget -O /usr/local/bin/gosu $GOSU_DOWNLOAD_URL \
 	&& wget -O /usr/local/bin/gosu.asc "$GOSU_DOWNLOAD_URL.asc" \

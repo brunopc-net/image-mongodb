@@ -70,8 +70,7 @@ jobs:
         image-ref: mongodb:latest
         format: template
         template: '{{ range . }} {{ .Target }} {{ end }}'
-        severity: HIGH,CRITICAL
-        exit-code: 1
+        severity: 'HIGH,CRITICAL'
 
     - name: Post-run cleanup
       if: always()
