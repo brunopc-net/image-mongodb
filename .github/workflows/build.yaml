@@ -3,8 +3,7 @@ name: Build and Test with MongoDB
 on:
   push:
     branches:
-      - main
-  pull_request:
+      - '!main'
 
 jobs:
   build-and-test:
