@@ -25,7 +25,9 @@ jobs:
 
     - name: Build MongoDB Docker image
       run: |
-        docker --build-arg MONGO_VERSION=$VERSION build -t mongodb:$VERSION .
+        docker build \
+            --build-arg MONGO_VERSION=$VERSION
+        -t mongodb:$VERSION .
     
     - name: Start MongoDB container
       run: |
