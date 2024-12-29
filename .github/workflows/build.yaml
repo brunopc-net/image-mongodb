@@ -76,8 +76,8 @@ jobs:
       with:
         image-ref: mongodb:latest
         format: template
-        template: '{{- range . }}{{- range .Vulnerabilities }}{{- $vuln = add $vuln 1 }}{{- end }}{{- end }}Severe vulnerabilities: {{ $vuln }}'
-        severity: 'HIGH,CRITICAL'
+        template: '{{- $vuln := 0 }}{{- range . }}{{- range .Vulnerabilities }}{{- $vuln = add $vuln 1 }}{{- end }}{{- end }}Severe vulnerabilities: {{ $vuln }}'
+        severity: 'CRITICAL,HIGH'
 
     - name: Post-run cleanup
       if: always()
