@@ -3,7 +3,7 @@ name: Build and Test with MongoDB
 on:
   push:
     branches:
-      - '!main'
+      - '*'
 
 jobs:
   build-and-test:
@@ -12,13 +12,22 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+    
+    - name: Extract version from branch name
+      run: |
+        # Get the version from branch name
+        VERSION=${GITHUB_REF#refs/heads/}
+        echo "Version: $VERSION"
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
     - name: Build MongoDB Docker image
       run: |
-        docker build -t mongodb .
+        docker build \
+            --build-arg MONGO_VERSION=$VERSION \
+        -t mongodb:$VERSION .
     
     - name: Start MongoDB container
       run: |
@@ -58,6 +67,19 @@ jobs:
         docker exec mongodb-container mongosh --eval 'const count = db.test.countDocuments({ name: "test" }); if (count !== 1) throw new Error();' || exit 1
 
         echo "Smoke tests passed!"
+    
+    - name: Scan for All Vulnerabilities
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        image-ref: mongodb:$VERSION
+
+    - name: Block image push if there is severe vulnerabilities
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        image-ref: mongodb:$VERSION
+        format: template
+        template: '{{- $vuln := 0 -}}{{- range . }}{{- range .Vulnerabilities }}{{- $vuln = (add $vuln 1) -}}{{- end }}{{- end }}Severe vulnerabilities: {{ $vuln }}'
+        severity: 'CRITICAL,HIGH'
 
     - name: Post-run cleanup
       if: always()
