@@ -69,7 +69,7 @@ jobs:
       with:
         image-ref: mongodb:latest
         format: template
-        template: '{- $critical := 0 }}{{- $high := 0 }}{{- range . }}{{- range .Vulnerabilities }}{{- if  eq .Severity "CRITICAL" }}{{- $critical = add $critical 1 }}{{- end }}{{- if  eq .Severity "HIGH" }}{{- $high = add $high 1 }}{{- end }}{{- end }}{{- end }}Critical: {{ $critical }}, High: {{ $high }}'
+        template: '{{ range . }} {{ .Target }} {{ end }}'
         severity: HIGH,CRITICAL
         exit-code: 1
 
