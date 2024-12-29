@@ -12,6 +12,13 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+    
+    - name: Extract version from branch name
+      run: |
+        # Get the version from branch name
+        VERSION=${GITHUB_REF#refs/heads/}
+        echo "Version: $VERSION"
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -69,7 +76,7 @@ jobs:
       with:
         image-ref: mongodb:latest
         format: template
-        template: '{{ range . }} {{ .Target }} {{ end }}'
+        template: '{{- range . }}{{- range .Vulnerabilities }}{{- $vuln = add $vuln 1 }}{{- end }}{{- end }}Severe vulnerabilities: {{ $vuln }}'
         severity: 'HIGH,CRITICAL'
 
     - name: Post-run cleanup
