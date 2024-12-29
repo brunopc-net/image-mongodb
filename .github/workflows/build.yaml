@@ -58,6 +58,20 @@ jobs:
         docker exec mongodb-container mongosh --eval 'const count = db.test.countDocuments({ name: "test" }); if (count !== 1) throw new Error();' || exit 1
 
         echo "Smoke tests passed!"
+    
+    - name: Scan for All Vulnerabilities
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        image-ref: mongodb:latest
+
+    - name: Block image push if there is severe vulnerabilities
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        image-ref: mongodb:latest
+        format: template
+        template: '{- $critical := 0 }}{{- $high := 0 }}{{- range . }}{{- range .Vulnerabilities }}{{- if  eq .Severity "CRITICAL" }}{{- $critical = add $critical 1 }}{{- end }}{{- if  eq .Severity "HIGH" }}{{- $high = add $high 1 }}{{- end }}{{- end }}{{- end }}Critical: {{ $critical }}, High: {{ $high }}'
+        severity: HIGH,CRITICAL
+        exit-code: 1
 
     - name: Post-run cleanup
       if: always()
