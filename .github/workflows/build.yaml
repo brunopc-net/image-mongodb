@@ -126,11 +126,13 @@ jobs:
         BLOCKING_VULN_COUNT=$(($CRIT_VULN_COUNT + $HIGH_VULN_COUNT + $MED_VULN_FIXABLE_COUNT))
         if [ "$BLOCKING_VULN_COUNT" -gt 0 ]; then
           echo
-          echo "Blocking vulnerabilities (aggregated)"
+          echo "Blocking vulnerabilities"
           echo "==============================================================================================================================================="
           echo "Critical: $CRIT_VULN_COUNT"
           echo "High:     $HIGH_VULN_COUNT"
           echo "Medium:   $MED_VULN_FIXABLE_COUNT (fixable)"
+          echo "==============================================================================================================================================="
+          echo "Aggregated list"
           echo "==============================================================================================================================================="
           print "$CRIT_VULN"
           print "$HIGH_VULN"
@@ -144,10 +146,12 @@ jobs:
         LOW_VULN=$(get_vulnerabilities "LOW")
 
         echo
-        echo "Non-blocking vulnerabilities (aggregated)"
+        echo "Non-blocking vulnerabilities"
         echo "==============================================================================================================================================="
         echo "Medium:   $(count "$MED_VULN_NONFIX")"
         echo "Low:      $(count "$LOW_VULN")"
+        echo "==============================================================================================================================================="
+        echo "Aggregated list"
         echo "==============================================================================================================================================="
         print "$MED_VULN_NONFIX"
         print "$LOW_VULN"
