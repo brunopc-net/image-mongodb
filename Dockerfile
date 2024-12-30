@@ -1,7 +1,7 @@
 # Base taken from https://github.com/docker-library/mongo/blob/master/8.0/Dockerfile
 FROM ubuntu:noble-20241118.1
 
-ARG MONGO_VERSION=8.0.4
+ARG MONGO_VERSION
 ARG MONGO_MAJOR="${MONGO_VERSION%.*}"
 ARG MONGO_PGPKEY_FINGERPRINT=4B0752C1BCA238C0B4EE14DC41DE058A4E7DCA05
 ARG MONGO_PGPKEY_URL=https://pgp.mongodb.com/server-${MONGO_MAJOR}.asc
@@ -10,6 +10,7 @@ ARG MONGO_PACKAGE=mongodb-org
 # Options for MONGO_REPO: repo.mongodb.org OR repo.mongodb.com
 ARG MONGO_REPO=repo.mongodb.org
 
+# REPLACED WITH USER COMMAND
 ARG GOSU_VERSION=1.17
 ARG GOSU_PGPKEY_FINGERPRINT=B42F6819007F00F88E364FD4036A9C25BF357DD4
 ARG GOSU_DOWNLOAD_URL=https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64
@@ -17,6 +18,8 @@ ARG GOSU_DOWNLOAD_URL=https://github.com/tianon/gosu/releases/download/${GOSU_VE
 ARG JSYAML_VERSION=3.13.1
 ARG JSYAML_CHECKSUM=662e32319bdd378e91f67578e56a34954b0a2e33aca11d70ab9f4826af24b941
 ARG JSYAML_DOWNLOAD_URL=https://registry.npmjs.org/js-yaml/-/js-yaml-${JSYAML_VERSION}.tgz
+
+RUN echo MONGO_VERSION=${MONGO_VERSION} && echo MONGO_MAJOR=${MONGO_MAJOR}
 
 # Dependencies
 RUN set -eux \
@@ -37,6 +40,7 @@ RUN set -eux \
 		wget \
 	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
 	\
+	# REPLACED WITH USER COMMAND
 	# gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
 	&& wget -O /usr/local/bin/gosu $GOSU_DOWNLOAD_URL \
 	&& wget -O /usr/local/bin/gosu.asc "$GOSU_DOWNLOAD_URL.asc" \
