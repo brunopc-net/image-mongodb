@@ -89,10 +89,11 @@ jobs:
         format: json
         output: 'trivy-report.json'
         severity: 'CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN'
+        hide-progress: true
     
     - name: Block image push if there is severe vulnerabilities
       run: |
-        VULNERABILITY_COUNT=$(jq '[.[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL" or .Severity == "HIGH")] | length' trivy-report.json)
+        VULNERABILITY_COUNT=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL" or .Severity == "HIGH")] | length' trivy-report.json)
         if [ "$VULNERABILITY_COUNT" -gt 0 ]; then
           echo "Blocking image push due to $VULNERABILITY_COUNT severe vulnerabilities"
           exit 1
