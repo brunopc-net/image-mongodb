@@ -101,11 +101,10 @@ jobs:
         echo "Low:      $LOW_VULN"
         echo "==============================================================="
         
-        REPORT_TEMPLATE="\(.Severity) - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"
-        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL") | "$REPORT_TEMPLATE"'
-        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")     | "$REPORT_TEMPLATE"'
-        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "MEDIUM")   | "$REPORT_TEMPLATE"'
-        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "LOW")      | "$REPORT_TEMPLATE"'
+        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL") | "CRITICAL - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"'
+        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")     | "HIGH     - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"'
+        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "MEDIUM")   | "MEDIUM   - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"'
+        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "LOW")      | "LOW      - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"'
 
         SEVERE_VULN=$(($CRIT_VULN + $HIGH_VULN))
         if [ "$SEVERE_VULN" -gt 0 ]; then
