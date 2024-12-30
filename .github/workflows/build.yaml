@@ -96,7 +96,7 @@ jobs:
         image-ref: "mongodb:${{ env.VERSION }}"
         scanners: vuln
         format: template
-        template: "{{ range . }} {{ .Vulnerabilities }} {{ end }}"
+        template: "{{ range . }}{{- range .Vulnerabilities }}{{- $vuln = add $vuln 1 }}{{ end }}"
         severity: 'CRITICAL,HIGH'
         hide-progress: true
         exit-code: 1
