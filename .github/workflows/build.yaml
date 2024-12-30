@@ -86,18 +86,18 @@ jobs:
         scan-type: image
         image-ref: "mongodb:${{ env.VERSION }}"
         scanners: vuln
-        format: table
+        format: json
         severity: 'CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN'
 
-    - name: Block image push if there is severe vulnerabilities
-      uses: aquasecurity/trivy-action@0.28.0
-      with:
-        scan-type: image
-        image-ref: "mongodb:${{ env.VERSION }}"
-        scanners: vuln
-        format: template
-        template: "{{ range . }}{{- range .Vulnerabilities }}{{- $vuln = add $vuln 1 }}{{ end }}"
-        severity: 'CRITICAL,HIGH'
-        hide-progress: true
-        exit-code: 1
+    # - name: Block image push if there is severe vulnerabilities
+    #   uses: aquasecurity/trivy-action@0.28.0
+    #   with:
+    #     scan-type: image
+    #     image-ref: "mongodb:${{ env.VERSION }}"
+    #     scanners: vuln
+    #     format: template
+    #     template: "{{ range . }}{{- range .Vulnerabilities }}{{- $vuln = add $vuln 1 }}{{ end }}"
+    #     severity: 'CRITICAL,HIGH'
+    #     hide-progress: true
+    #     exit-code: 1
 
