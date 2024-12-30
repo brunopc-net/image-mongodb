@@ -126,7 +126,7 @@ jobs:
         BLOCKING_VULN_COUNT=$(($CRIT_VULN_COUNT + $HIGH_VULN_COUNT + $MED_VULN_FIXABLE_COUNT))
         if [ "$BLOCKING_VULN_COUNT" -gt 0 ]; then
           echo
-          echo "Blocking vulnerabilities:"
+          echo "Blocking vulnerabilities (aggregated)"
           echo "=============================================================================================================================="
           echo "Critical: $CRIT_VULN_COUNT"
           echo "High:     $HIGH_VULN_COUNT"
@@ -136,7 +136,7 @@ jobs:
           print "$HIGH_VULN"
           print "$MED_VULN_FIXABLE"
           echo "=============================================================================================================================="
-          echo "Blocking image push due to $BLOC_VULN blocking vulnerabilities (critical, high, fixable medium)"
+          echo "Blocking image push due to $BLOCKING_VULN_COUNT blocking vulnerabilities (critical, high, fixable medium)"
           exit 1
         fi
         
@@ -144,23 +144,12 @@ jobs:
         LOW_VULN=$(get_vulnerabilities "LOW")
 
         echo
-        echo "Non blocking vulnerabilities:"
+        echo "Non-blocking vulnerabilities (aggregated)"
         echo "=============================================================================================================================="
         echo "Medium:   $(count "$MED_VULN_NONFIX")"
         echo "Low:      $(count "$LOW_VULN")"
         echo "=============================================================================================================================="
         print "$MED_VULN_NONFIX"
         print "$LOW_VULN"
+        echo "=============================================================================================================================="
       shell: bash
-
-    # - name: Block image push if there is severe vulnerabilities
-    #   uses: aquasecurity/trivy-action@0.28.0
-    #   with:
-    #     scan-type: image
-    #     image-ref: "mongodb:${{ env.VERSION }}"
-    #     scanners: vuln
-    #     format: template
-    #     template: "{{ range . }}{{- range .Vulnerabilities }}{{- $vuln = add $vuln 1 }}{{ end }}"
-    #     severity: 'CRITICAL,HIGH'
-    #     hide-progress: true
-    #     exit-code: 1
