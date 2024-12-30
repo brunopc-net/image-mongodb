@@ -101,8 +101,8 @@ jobs:
 
         CRIT_VULN=$(get_vulnerabilities "CRITICAL")
         HIGH_VULN=$(get_vulnerabilities "HIGH")
-        MED_VULN_NONFIX=$(get_vulnerabilities "MEDIUM"  | jq '.[] | select(.FixedVersion == null)')
-        MED_VULN_FIXABLE=$(get_vulnerabilities "MEDIUM" | jq '.[] | select(.FixedVersion != null)')
+        MED_VULN_NONFIX=$(get_vulnerabilities "MEDIUM" | jq '[.[] | select(.FixedVersion == null)]')
+        MED_VULN_FIXABLE=$(get_vulnerabilities "MEDIUM" | jq '[.[] | select(.FixedVersion != null)]')
         LOW_VULN=$(get_vulnerabilities "LOW")
 
         CRIT_VULN_COUNT=$(count "$CRIT_VULN")
@@ -113,6 +113,7 @@ jobs:
         
         BLOCKING_VULN_COUNT=$(($CRIT_VULN_COUNT + $HIGH_VULN_COUNT + $MED_VULN_FIXABLE_COUNT))
         # if [ "$BLOCKING_VULN_COUNT" -gt 0 ]; then
+          echo 
           echo "=============================================================================================================================="
           echo "Blocking vulnerability report:"
           echo "=============================================================================================================================="
@@ -132,6 +133,7 @@ jobs:
         # MED_VULN=$(jq '[.Results[]  | .Vulnerabilities[]? | select(.Severity == "MEDIUM")]   | length' trivy-report.json)
         # LOW_VULN=$(jq '[.Results[]  | .Vulnerabilities[]? | select(.Severity == "LOW")]      | length' trivy-report.json)
 
+        echo 
         echo "No blocking vulnerabilities found"
         echo "=============================================================================================================================="
         echo "Non blocking vulnerability report:"
