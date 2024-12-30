@@ -108,7 +108,7 @@ jobs:
 
         SEVERE_VULN=$(($CRIT_VULN + $HIGH_VULN))
         if [ "$SEVERE_VULN" -gt 0 ]; then
-          echo "Blocking image push due to $SEVERE_VULN severe vulnerabilities"
+          echo "Blocking image push due to $SEVERE_VULN severe vulnerabilities (critical, high)"
           exit 1
         fi
       shell: bash
