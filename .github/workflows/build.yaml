@@ -83,7 +83,7 @@ jobs:
     - name: Scan for All Vulnerabilities
       uses: aquasecurity/trivy-action@0.28.0
       with:
-        image-ref: "mongodb:$VERSION"
+        image-ref: "mongodb:${{ env.VERSION }}"
 
     - name: Block image push if there is severe vulnerabilities
       uses: aquasecurity/trivy-action@0.28.0
