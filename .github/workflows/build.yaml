@@ -75,11 +75,6 @@ jobs:
         docker stop mongodb-container || true
         docker rm mongodb-container || true
 
-    - name: Debugging
-      run: |
-        docker images
-        echo "mongodb:$VERSION"
-
     - name: Scan for All Vulnerabilities
       uses: aquasecurity/trivy-action@0.28.0
       with:
@@ -90,6 +85,6 @@ jobs:
       with:
         image-ref: "mongodb:${{ env.VERSION }}"
         format: template
-        template: '{{- $vuln := 0 -}}{{- range . }}{{- range .Vulnerabilities }}{{- $vuln = (add $vuln 1) -}}{{- end }}{{- end }}Severe vulnerabilities: {{ $vuln }}'
+        template: 'Severe vulnerabilities: {{- $vuln := 0 }}{{- range . }}{{- range .Vulnerabilities }}{{- $vuln = add $vuln 1 }}{{- end }}{{- end }}{{ $vuln }}'
         severity: 'CRITICAL,HIGH'
 
