@@ -87,7 +87,17 @@ jobs:
         image-ref: "mongodb:${{ env.VERSION }}"
         scanners: vuln
         format: json
+        output: 'trivy-report.json'
         severity: 'CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN'
+    
+    - name: Block image push if there is severe vulnerabilities
+      run: |
+        VULNERABILITY_COUNT=$(jq '[.[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL" or .Severity == "HIGH")] | length' trivy-report.json)
+        if [ "$VULNERABILITY_COUNT" -gt 0 ]; then
+          echo "Blocking image push due to $VULNERABILITY_COUNT severe vulnerabilities"
+          exit 1
+        fi
+      shell: bash
 
     # - name: Block image push if there is severe vulnerabilities
     #   uses: aquasecurity/trivy-action@0.28.0
@@ -100,4 +110,3 @@ jobs:
     #     severity: 'CRITICAL,HIGH'
     #     hide-progress: true
     #     exit-code: 1
-
