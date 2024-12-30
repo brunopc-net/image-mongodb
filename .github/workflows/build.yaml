@@ -75,31 +75,27 @@ jobs:
         docker stop mongodb-container || true
         docker rm mongodb-container || true
 
+    - name: Debugging
+      run: |
+        docker images
+        echo "mongodb:$VERSION"
+
     - name: Scan for All Vulnerabilities
       uses: aquasecurity/trivy-action@0.28.0
       with:
+        scan-type: image
         image-ref: "mongodb:${{ env.VERSION }}"
-        scan-type: 'image' # Scan type, e.g. image or fs
-        scanners: vuln # Security issues to detect (vuln,secret,misconfig,license)
-        severity: 'CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN'
-        format: json
-        output: 'trivy-report.json'
-    
-    - name: Display Vulnerabilities
-      run: |
-        cat trivy-report.json | jq -r '
-        [.[] | .Vulnerabilities[]? | {Severity, VulnerabilityID, Title: .Title | sub("\n"; " "), Description: .Description | sub("\n"; " ")}]
-        | (["Severity", "VulnerabilityID", "Title", "Description"] | @tsv),
-          (.[] | [.Severity, .VulnerabilityID, .Title, .Description] | @tsv)
-        ' | column -t -s $'\t'
-      shell: bash
-    
+        scanners: vuln
+        format: table
+
     - name: Block image push if there is severe vulnerabilities
-      run: |
-        critical_or_high=$(jq '.[] | .Vulnerabilities[]? | select(.Severity=="CRITICAL" or .Severity=="HIGH")' trivy-report.json)
-        if [ -n "$critical_or_high" ]; then
-          echo "Critical or High vulnerabilities detected!"
-          exit 1
-        fi
-      shell: bash
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        scan-type: image
+        image-ref: "mongodb:${{ env.VERSION }}"
+        scanners: vuln
+        format: template
+        template: "{{ range . }} {{ .Target }} {{ end }}"
+        severity: 'CRITICAL,HIGH'
+        hide-progress: true
 
