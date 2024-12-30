@@ -131,10 +131,10 @@ jobs:
         echo "Low:      $LOW_VULN"
         echo "=============================================================================================================================="
         
-        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL") | "CRITICAL - \(.VulnerabilityID) - \(.Title)' | sort | uniq
-        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")     | "HIGH     - \(.VulnerabilityID) - \(.Title)' | sort | uniq
-        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "MEDIUM")   | "MEDIUM   - \(.VulnerabilityID) - \(.Title)' | sort | uniq
-        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "LOW")      | "LOW      - \(.VulnerabilityID) - \(.Title)' | sort | uniq
+        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL") | "CRITICAL - \(.VulnerabilityID) - \(.Title)"' | sort | uniq
+        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")     | "HIGH     - \(.VulnerabilityID) - \(.Title)"' | sort | uniq
+        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "MEDIUM")   | "MEDIUM   - \(.VulnerabilityID) - \(.Title)"' | sort | uniq
+        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "LOW")      | "LOW      - \(.VulnerabilityID) - \(.Title)"' | sort | uniq
         
         SEVERE_VULN=$(($CRIT_VULN + $HIGH_VULN))
         if [ "$SEVERE_VULN" -gt 0 ]; then
