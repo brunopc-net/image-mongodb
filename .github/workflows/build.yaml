@@ -75,7 +75,7 @@ jobs:
         docker stop mongodb-container || true
         docker rm mongodb-container || true
 
-    - name: Scan for All Vulnerabilities
+    - name: Scan for vulnerabilities
       uses: aquasecurity/trivy-action@0.28.0
       with:
         scan-type: image
@@ -89,19 +89,18 @@ jobs:
     - name: Display Vulnerabilities Report
       run: |
         echo "Vulnerability Report:"
-        echo "====================="
+        echo "==============================================================="
+        echo "Critical: $(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-report.json)"
+        echo "High:     $(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")]     | length' trivy-report.json)"
+        echo "Medium:   $(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "MEDIUM")]   | length' trivy-report.json)"
+        echo "Low:      $(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "LOW")]      | length' trivy-report.json)"
+        echo "==============================================================="
+        
         cat trivy-report.json | jq -r '
         .Results[] | .Vulnerabilities[]? |
-        "\(.Severity) - \(.VulnerabilityID) - \(.Title) - Package: \(.PkgName) - Fixed Version: \(.FixedVersion // "N/A")"'
-      shell: bash
+        "\(.Severity) - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"'
 
-    - name: Block image push if there is severe vulnerabilities
-      run: |
-        CRIT_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-report.json)
-        HIGH_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")] | length' trivy-report.json)
-        MED_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "MEDIUM")] | length' trivy-report.json)
-        LOW_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "LOW")] | length' trivy-report.json)
-        SEVERE_VULN=$(($CRIT_VULN + $HIGH_VULN)) 
+        SEVERE_VULN=$(($CRIT_VULN + $HIGH_VULN))
         if [ "$SEVERE_VULN" -gt 0 ]; then
           echo "Blocking image push due to $SEVERE_VULN severe vulnerabilities"
           exit 1
