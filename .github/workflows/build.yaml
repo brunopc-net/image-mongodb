@@ -68,17 +68,12 @@ jobs:
 
         echo "Smoke tests passed!"
     
-    - name: Post-run cleanup
+    - name: Trashing container
       if: always()
       run: |
         echo "Stopping MongoDB container..."
         docker stop mongodb-container || true
         docker rm mongodb-container || true
-
-    - name: Debugging
-      run: |
-        docker images
-        echo "mongodb:$VERSION"
 
     - name: Scan for All Vulnerabilities
       uses: aquasecurity/trivy-action@0.28.0
@@ -97,7 +92,7 @@ jobs:
         echo "====================="
         cat trivy-report.json | jq -r '
         .Results[] | .Vulnerabilities[]? |
-        "Severity: \(.Severity)\nID: \(.VulnerabilityID)\nTitle: \(.Title)\nDescription: \(.Description | gsub("\n"; " "))\nPackage: \(.PkgName)\nFixed Version: \(.FixedVersion // "N/A")\n---"'
+        "\(.Severity) - \(.VulnerabilityID) - \(.Title) - Package: \(.PkgName) - Fixed Version: \(.FixedVersion // "N/A")"'
       shell: bash
 
     - name: Block image push if there is severe vulnerabilities
