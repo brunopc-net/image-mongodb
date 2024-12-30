@@ -105,8 +105,20 @@ jobs:
         }
 
         count() {
-          local vuln="$1"
-          echo "$vuln" | jq 'length'
+          local vulns="$1"
+          echo "$vulns" | jq 'length'
+        }
+
+        print() {
+          local vulns="$1"
+          echo "$vulns" | jq -r '
+            .[] |
+            if .FixedVersion == null then
+              "\(.Severity) - \(.VulnerabilityID) - \(.Title)"
+            else
+              "\(.Severity) - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion)"
+            end
+          '
         }
 
         CRIT_VULN=$(get_vulnerabilities "CRITICAL")
@@ -130,6 +142,11 @@ jobs:
           echo "High:     $HIGH_VULN_COUNT"
           echo "Medium:   $MED_VULN_FIXABLE_COUNT (fixable)"
           echo "=============================================================================================================================="
+          print $CRIT_VULN
+          print $HIGH_VULN
+          print $MED_VULN_FIXABLE
+          echo "=============================================================================================================================="
+          
         #   cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL") | "CRITICAL - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"' | sort | uniq
         #   cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")     | "HIGH     - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"' | sort | uniq
         #   cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "MEDIUM")   | select(.FixedVersion != null and .FixedVersion != "") | "MEDIUM   - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion)"' | sort | uniq
