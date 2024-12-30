@@ -112,7 +112,7 @@ jobs:
               "\(.Severity) - \(.VulnerabilityID) - \(.Title)"
             else
               "\(.Severity) - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion)"
-            end
+            end | sort | uniq
           '
         }
 
