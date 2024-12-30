@@ -68,6 +68,13 @@ jobs:
 
         echo "Smoke tests passed!"
     
+    - name: Post-run cleanup
+      if: always()
+      run: |
+        echo "Stopping MongoDB container..."
+        docker stop mongodb-container || true
+        docker rm mongodb-container || true
+        
     - name: Debugging
       run: |
         docker images
@@ -86,9 +93,3 @@ jobs:
         template: '{{- $vuln := 0 -}}{{- range . }}{{- range .Vulnerabilities }}{{- $vuln = (add $vuln 1) -}}{{- end }}{{- end }}Severe vulnerabilities: {{ $vuln }}'
         severity: 'CRITICAL,HIGH'
 
-    - name: Post-run cleanup
-      if: always()
-      run: |
-        echo "Stopping MongoDB container..."
-        docker stop mongodb-container || true
-        docker rm mongodb-container || true
