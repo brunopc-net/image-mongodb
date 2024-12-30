@@ -98,18 +98,11 @@ jobs:
           local vuln="$1"
           echo "$vuln" | jq 'length'
         }
-        
-        print_vulnerabilities() {
-          local sev="$1"
-          local vuln="$2"
-          echo $vuln | jq -r ".[] |
-          \"$sev - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // \"N/A\")\"" | sort | uniq
-        }
 
         CRIT_VULN=$(get_vulnerabilities "CRITICAL")
         HIGH_VULN=$(get_vulnerabilities "HIGH")
-        MED_VULN_NONFIX=$(get_vulnerabilities "MEDIUM" | jq 'select(.FixedVersion == null)')
-        MED_VULN_FIXABLE=$(get_vulnerabilities "MEDIUM" | jq 'select(.FixedVersion != null)')
+        MED_VULN_NONFIX=$(get_vulnerabilities "MEDIUM"  | jq '.[] | select(.FixedVersion == null)')
+        MED_VULN_FIXABLE=$(get_vulnerabilities "MEDIUM" | jq '.[] | select(.FixedVersion != null)')
         LOW_VULN=$(get_vulnerabilities "LOW")
 
         CRIT_VULN_COUNT=$(count "$CRIT_VULN")
