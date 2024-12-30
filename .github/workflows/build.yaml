@@ -94,12 +94,12 @@ jobs:
         LOW_VULN=$(jq '[.Results[]  | .Vulnerabilities[]? | select(.Severity == "LOW")]      | length' trivy-report.json)
 
         echo "Vulnerability Report:"
-        echo "==============================================================="
+        echo "=============================================================================================================================="
         echo "Critical: $CRIT_VULN"
         echo "High:     $HIGH_VULN"
         echo "Medium:   $MED_VULN"
         echo "Low:      $LOW_VULN"
-        echo "==============================================================="
+        echo "=============================================================================================================================="
         
         cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL") | "CRITICAL - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"'
         cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")     | "HIGH     - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"'
