@@ -90,9 +90,9 @@ jobs:
       run: |
         # Function to extract vulnerabilities by severity
         get_vulnerabilities() {
-          jq -r "[.Results[] | .Vulnerabilities[]? | select(.Severity == \"$1\") $2]" trivy-report.json
+          jq -r '[.Results[] | .Vulnerabilities[]? | select(.Severity == "$1")]' trivy-report.json
         }
-
+          
         BLOC_CRIT_VULN=$(get_vulnerabilities "CRITICAL" | jq 'length')
         BLOC_HIGH_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")    ] | length' trivy-report.json)
         BLOC_MED_VULN=$(jq '[.Results[]  | .Vulnerabilities[]? | select(.Severity == "MEDIUM") | select(.FixedVersion != null and .FixedVersion != "")] | length' trivy-report.json)
