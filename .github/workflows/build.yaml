@@ -123,18 +123,14 @@ jobs:
 
         CRIT_VULN=$(get_vulnerabilities "CRITICAL")
         HIGH_VULN=$(get_vulnerabilities "HIGH")
-        MED_VULN_NONFIX=$(get_nonfix_vulnerabilities "MEDIUM")
         MED_VULN_FIXABLE=$(get_fixable_vulnerabilities "MEDIUM")
-        LOW_VULN=$(get_vulnerabilities "LOW")
 
         CRIT_VULN_COUNT=$(count "$CRIT_VULN")
         HIGH_VULN_COUNT=$(count "$HIGH_VULN")
-        MED_VULN_NONFIX_COUNT=$(count "$MED_VULN_NONFIX")
-        MED_VULN_FIXABLE_COUNT=$(count "$MED_VULN_FIXABLE")
-        LOW_VULN_COUNT=$(count "$LOW_VULN")
-        
+        $MED_VULN_FIXABLE_COUNT=$(count "$HIGH_VULN")
+
         BLOCKING_VULN_COUNT=$(($CRIT_VULN_COUNT + $HIGH_VULN_COUNT + $MED_VULN_FIXABLE_COUNT))
-        # if [ "$BLOCKING_VULN_COUNT" -gt 0 ]; then
+        if [ "$BLOCKING_VULN_COUNT" -gt 0 ]; then
           echo
           echo "Blocking vulnerabilities:"
           echo "=============================================================================================================================="
@@ -150,21 +146,26 @@ jobs:
         #   cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL") | "CRITICAL - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"' | sort | uniq
         #   cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")     | "HIGH     - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"' | sort | uniq
         #   cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "MEDIUM")   | select(.FixedVersion != null and .FixedVersion != "") | "MEDIUM   - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion)"' | sort | uniq
-        #   echo "Blocking image push due to $BLOC_VULN blocking vulnerabilities (critical, high, fixable medium)"
-        #   exit 1
-        # fi
+           echo "Blocking image push due to $BLOC_VULN blocking vulnerabilities (critical, high, fixable medium)"
+           exit 1
+        fi
 
         # CRIT_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-report.json)
         # HIGH_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")]     | length' trivy-report.json)
         # MED_VULN=$(jq '[.Results[]  | .Vulnerabilities[]? | select(.Severity == "MEDIUM")]   | length' trivy-report.json)
         # LOW_VULN=$(jq '[.Results[]  | .Vulnerabilities[]? | select(.Severity == "LOW")]      | length' trivy-report.json)
+        
+        MED_VULN_NONFIX=$(get_nonfix_vulnerabilities "MEDIUM")
+        LOW_VULN=$(get_vulnerabilities "LOW")
 
         echo
         echo "Non blocking vulnerabilities:"
         echo "=============================================================================================================================="
-        echo "Medium:   $MED_VULN_NONFIX_COUNT"
-        echo "Low:      $LOW_VULN_COUNT"
+        echo "Medium:   $(count $MED_VULN_NONFIX)"
+        echo "Low:      $(count $LOW_VULN)"
         echo "=============================================================================================================================="
+        print $MED_VULN_NONFIX
+        print $LOW_VULN
         
         # cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL") | "CRITICAL - \(.VulnerabilityID) - \(.Title)"' | sort | uniq
         # cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")     | "HIGH     - \(.VulnerabilityID) - \(.Title)"' | sort | uniq
