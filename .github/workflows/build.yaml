@@ -122,11 +122,10 @@ jobs:
         }
 
         CRIT_VULN=$(get_vulnerabilities "CRITICAL")
-        HIGH_VULN=$(get_vulnerabilities "HIGH")
-        MED_VULN_FIXABLE=$(get_fixable_vulnerabilities "MEDIUM")
-
         CRIT_VULN_COUNT=$(count "$CRIT_VULN")
+        HIGH_VULN=$(get_vulnerabilities "HIGH")
         HIGH_VULN_COUNT=$(count "$HIGH_VULN")
+        MED_VULN_FIXABLE=$(get_fixable_vulnerabilities "MEDIUM")
         MED_VULN_FIXABLE_COUNT=$(count "$HIGH_VULN")
 
         BLOCKING_VULN_COUNT=$(($CRIT_VULN_COUNT + $HIGH_VULN_COUNT + $MED_VULN_FIXABLE_COUNT))
@@ -161,8 +160,8 @@ jobs:
         echo
         echo "Non blocking vulnerabilities:"
         echo "=============================================================================================================================="
-        echo "Medium:   $(count $MED_VULN_NONFIX)"
-        echo "Low:      $(count $LOW_VULN)"
+        echo "Medium:   $(count "$MED_VULN_NONFIX")"
+        echo "Low:      $(count "$LOW_VULN")"
         echo "=============================================================================================================================="
         print $MED_VULN_NONFIX
         print $LOW_VULN
