@@ -85,6 +85,6 @@ jobs:
       with:
         image-ref: "mongodb:${{ env.VERSION }}"
         format: template
-        template: 'Severe vulnerabilities: {{- $vuln := 0 }}{{- range . }}{{- range .Vulnerabilities }}{{- $vuln = add $vuln 1 }}{{- end }}{{- end }}{{ $vuln }}'
+        template: '{{- $vuln := 0 }}{{ range . }} {{ .Target }} {{ end }}'
         severity: 'CRITICAL,HIGH'
 
