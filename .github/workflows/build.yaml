@@ -91,11 +91,24 @@ jobs:
         severity: 'CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN'
         hide-progress: true
     
+    - name: Display Vulnerabilities Report
+      run: |
+        echo "Vulnerability Report:"
+        echo "====================="
+        cat trivy-report.json | jq -r '
+        .Results[] | .Vulnerabilities[]? |
+        "Severity: \(.Severity)\nID: \(.VulnerabilityID)\nTitle: \(.Title)\nDescription: \(.Description | gsub("\n"; " "))\nPackage: \(.PkgName)\nFixed Version: \(.FixedVersion // "N/A")\n---"'
+      shell: bash
+
     - name: Block image push if there is severe vulnerabilities
       run: |
-        VULNERABILITY_COUNT=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL" or .Severity == "HIGH")] | length' trivy-report.json)
-        if [ "$VULNERABILITY_COUNT" -gt 0 ]; then
-          echo "Blocking image push due to $VULNERABILITY_COUNT severe vulnerabilities"
+        CRIT_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-report.json)
+        HIGH_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")] | length' trivy-report.json)
+        MED_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "MEDIUM")] | length' trivy-report.json)
+        LOW_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "LOW")] | length' trivy-report.json)
+        SEVERE_VULN=$(($CRIT_VULN + $HIGH_VULN)) 
+        if [ "$SEVERE_VULN" -gt 0 ]; then
+          echo "Blocking image push due to $SEVERE_VULN severe vulnerabilities"
           exit 1
         fi
       shell: bash
