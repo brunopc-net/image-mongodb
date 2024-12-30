@@ -93,19 +93,27 @@ jobs:
           local severity="$1"
           jq -r "[.Results[] | .Vulnerabilities[]? | select(.Severity == \"${severity}\")]" trivy-report.json
         }
-          
-        BLOC_CRIT_VULN=$(get_vulnerabilities "CRITICAL" | jq 'length')
-        BLOC_HIGH_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")    ] | length' trivy-report.json)
-        BLOC_MED_VULN=$(jq '[.Results[]  | .Vulnerabilities[]? | select(.Severity == "MEDIUM") | select(.FixedVersion != null and .FixedVersion != "")] | length' trivy-report.json)
 
-        BLOC_VULN=$(($BLOC_CRIT_VULN + $BLOC_HIGH_VULN + $BLOC_MED_VULN))
-        if [ "$BLOC_VULN" -gt 0 ]; then
+        CRIT_VULN=$(get_vulnerabilities "CRITICAL")
+        HIGH_VULN=$(get_vulnerabilities "HIGH")
+        MED_VULN=$(get_vulnerabilities "MEDIUM")
+        MED_VULN_FIXABLE=$(echo "$MED_VULN" | jq 'select(.FixedVersion != null)')
+        LOW_VULN=$(get_vulnerabilities "LOW")
+
+        CRIT_VULN_COUNT=$(echo "$CRIT_VULN" | jq 'length')
+        HIGH_VULN_COUNT=$(echo "$HIGH_VULN" | jq 'length')
+        MED_VULN_COUNT=$(echo "$MED_VULN" | jq 'length')
+        MED_VULN_FIXABLE_COUNT=$(echo "$MED_VULN_FIXABLE" | jq 'length')
+        LOW_VULN_COUNT=$(echo "$LOW_VULN" | jq 'length')
+        
+        BLOCKING_VULN_COUNT=$(($CRIT_VULN_COUNT + $HIGH_VULN_COUNT + $MED_VULN_FIXABLE_COUNT))
+        if [ "$BLOCKING_VULN_COUNT" -gt 0 ]; then
           echo "=============================================================================================================================="
           echo "Blocking vulnerability report:"
           echo "=============================================================================================================================="
-          echo "Critical: $BLOC_CRIT_VULN"
-          echo "High:     $BLOC_HIGH_VULN"
-          echo "Medium:   $BLOC_MED_VULN"
+          echo "Critical: $CRIT_VULN_COUNT"
+          echo "High:     $HIGH_VULN_COUNT"
+          echo "Medium:   $MED_VULN_FIXABLE_COUNT (fixable)"
           echo "=============================================================================================================================="
           
           cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL") | "CRITICAL - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"' | sort | uniq
