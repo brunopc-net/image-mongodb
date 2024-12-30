@@ -88,18 +88,24 @@ jobs:
     
     - name: Display Vulnerabilities Report
       run: |
+        CRIT_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-report.json)
+        HIGH_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")]     | length' trivy-report.json)
+        MED_VULN=$(jq '[.Results[]  | .Vulnerabilities[]? | select(.Severity == "MEDIUM")]   | length' trivy-report.json)
+        LOW_VULN=$(jq '[.Results[]  | .Vulnerabilities[]? | select(.Severity == "LOW")]      | length' trivy-report.json)
+
         echo "Vulnerability Report:"
         echo "==============================================================="
-        echo "Critical: $(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-report.json)"
-        echo "High:     $(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")]     | length' trivy-report.json)"
-        echo "Medium:   $(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "MEDIUM")]   | length' trivy-report.json)"
-        echo "Low:      $(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "LOW")]      | length' trivy-report.json)"
+        echo "Critical: $CRIT_VULN"
+        echo "High:     $HIGH_VULN"
+        echo "Medium:   $MED_VULN"
+        echo "Low:      $LOW_VULN"
         echo "==============================================================="
         
-        cat trivy-report.json | jq -r '
-        .Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL") |
-        "\(.Severity) - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"'
-        
+        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL") | "\(.Severity) - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"'
+        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")     | "\(.Severity) - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"'
+        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "MEDIUM")   | "\(.Severity) - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"'
+        cat trivy-report.json | jq -r '.Results[] | .Vulnerabilities[]? | select(.Severity == "LOW")      | "\(.Severity) - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion // "N/A")"'
+
         SEVERE_VULN=$(($CRIT_VULN + $HIGH_VULN))
         if [ "$SEVERE_VULN" -gt 0 ]; then
           echo "Blocking image push due to $SEVERE_VULN severe vulnerabilities"
