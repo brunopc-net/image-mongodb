@@ -126,19 +126,15 @@ jobs:
         BLOCKING_VULN_COUNT=$(($CRIT_VULN_COUNT + $HIGH_VULN_COUNT + $MED_VULN_FIXABLE_COUNT))
         if [ "$BLOCKING_VULN_COUNT" -gt 0 ]; then
           echo
-          echo "Blocking vulnerabilities"
-          echo "==============================================================================================================================================="
+          echo "Blocking image push due to $BLOCKING_VULN_COUNT blocking vulnerabilities (critical, high, fixable medium)"
           echo "Critical: $CRIT_VULN_COUNT"
           echo "High:     $HIGH_VULN_COUNT"
           echo "Medium:   $MED_VULN_FIXABLE_COUNT (fixable)"
-          echo "==============================================================================================================================================="
-          echo "Aggregated list"
-          echo "==============================================================================================================================================="
+          echo "================================================================Aggregated list================================================================"
           print "$CRIT_VULN"
           print "$HIGH_VULN"
           print "$MED_VULN_FIXABLE"
           echo "==============================================================================================================================================="
-          echo "Blocking image push due to $BLOCKING_VULN_COUNT blocking vulnerabilities (critical, high, fixable medium)"
           exit 1
         fi
         
@@ -147,12 +143,9 @@ jobs:
 
         echo
         echo "Non-blocking vulnerabilities"
-        echo "==============================================================================================================================================="
-        echo "Medium:   $(count "$MED_VULN_NONFIX")"
-        echo "Low:      $(count "$LOW_VULN")"
-        echo "==============================================================================================================================================="
-        echo "Aggregated list"
-        echo "==============================================================================================================================================="
+        echo "Medium: $(count "$MED_VULN_NONFIX")"
+        echo "Low:    $(count "$LOW_VULN")"
+        echo "================================================================Aggregated list================================================================"
         print "$MED_VULN_NONFIX"
         print "$LOW_VULN"
         echo "==============================================================================================================================================="
