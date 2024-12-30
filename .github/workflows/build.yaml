@@ -88,9 +88,9 @@ jobs:
     
     - name: Display Vulnerabilities Report
       run: |
-        BLOC_CRIT_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL") | select(.Severity == "CRITICAL")] | length' trivy-report.json)
-        BLOC_HIGH_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")     | select(.Severity == "CRITICAL")] | length' trivy-report.json)
-        BLOC_MED_VULN=$(jq '[.Results[]  | .Vulnerabilities[]? | select(.Severity == "MEDIUM")]  | select(.FixedVersion != null and .FixedVersion != "")] | length' trivy-report.json)
+        BLOC_CRIT_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-report.json)
+        BLOC_HIGH_VULN=$(jq '[.Results[] | .Vulnerabilities[]? | select(.Severity == "HIGH")    ] | length' trivy-report.json)
+        BLOC_MED_VULN=$(jq '[.Results[]  | .Vulnerabilities[]? | select(.Severity == "MEDIUM")] | select(.FixedVersion != null and .FixedVersion != "")] | length' trivy-report.json)
 
         BLOC_VULN=$(($BLOC_CRIT_VULN + $BLOC_HIGH_VULN + $BLOC_MED_VULN))
         if [ "$BLOC_VULN" -gt 0 ]; then
