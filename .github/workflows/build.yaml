@@ -28,7 +28,6 @@ jobs:
         docker build \
             --build-arg MONGO_VERSION=$VERSION \
         -t mongodb:$VERSION .
-        docker images
     
     - name: Start MongoDB container
       run: |
@@ -69,6 +68,11 @@ jobs:
 
         echo "Smoke tests passed!"
     
+    - name: Debugging
+      run: |
+        docker images
+        echo "mongodb:$VERSION"
+
     - name: Scan for All Vulnerabilities
       uses: aquasecurity/trivy-action@0.28.0
       with:
