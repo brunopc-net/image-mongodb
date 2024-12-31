@@ -17,3 +17,7 @@ jobs:
   vuln-scan:
     needs: build
     uses: ./.github/workflows/2b-vuln-scan.yml
+
+  push:
+    needs: [test, vuln-scan]
+    uses: ./.github/workflows/3-push.yml  
