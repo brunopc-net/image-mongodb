@@ -31,10 +31,10 @@ jobs:
     - name: Save Docker image as tarball
       run: docker save mongodb -o mongodb-image.tar
 
-    - name: Upload Docker image as artifact
-      uses: actions/upload-artifact@v4
+    - name: Cache Docker image tarball
+      uses: actions/cache@v4
       with:
-        name: mongodb-image
         path: mongodb-image.tar
-        retention-days: 1
-        overwrite: true
+        key: ${{ runner.os }}-docker-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-docker-

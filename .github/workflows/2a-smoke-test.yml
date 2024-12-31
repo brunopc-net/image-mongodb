@@ -8,12 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download Docker image artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: mongodb-image
-
-      - name: Load Docker image from tarball
+      - name: Load Docker image from cached tarball
         run: docker load -i mongodb-image.tar
 
       - name: Start MongoDB container
