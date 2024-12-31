@@ -1,0 +1,43 @@
+name: Build Docker image
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!latest'
+
+jobs:
+  build-docker-image:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Extract version from branch name
+      run: |
+        # Get the version from branch name
+        VERSION=${GITHUB_REF#refs/heads/}
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build MongoDB Docker image
+      run: |
+        docker build \
+          --build-arg MONGO_VERSION=$VERSION \
+          -t mongodb:$VERSION \
+          -t mongodb:latest \
+          .
+    
+    - name: Save Docker image as tarball
+      run: docker save mongodb -o mongodb-image.tar
+
+    - name: Upload Docker image as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: mongodb-image
+        path: mongodb-image.tar
+        retention-days: 1
+        overwrite: true

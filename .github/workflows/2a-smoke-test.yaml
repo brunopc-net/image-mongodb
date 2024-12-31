@@ -1,0 +1,64 @@
+name: Smoke tests
+
+on:
+  workflow_run:
+    workflows:
+      - Build Docker image
+    types:
+      - completed
+
+jobs:
+  smoke-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mongodb-image
+
+      - name: Load Docker image from tarball
+        run: docker load -i mongodb-image.tar
+
+      - name: Start MongoDB container
+        run: |
+          docker run -d \
+              --name mongodb-container \
+              -p 27017:27017 \
+              --health-cmd "mongosh \
+              --eval 'db.runCommand({ ping: 1 })'" \
+          mongodb
+    
+      - name: Wait for MongoDB to be ready
+        run: |
+          for i in {1..60}; do
+            if docker inspect --format='{{json .State.Health.Status}}' mongodb-container | grep -q '"healthy"'; then
+              echo "MongoDB is ready!";
+              break;
+            fi;
+            echo "Waiting for MongoDB...";
+            sleep 1;
+          done
+          if [ $i -eq 60 ]; then
+            echo "MongoDB did not become healthy in time";
+            exit 1;
+          fi
+    
+      - name: Run smoke tests
+        run: |
+          echo "Testing MongoDB connection..."
+          docker exec mongodb-container mongosh --eval 'db.runCommand({ ping: 1 })' || exit 1
+
+          echo "Inserting test data..."
+          docker exec mongodb-container mongosh --eval 'db.test.insertOne({ name: "test", value: 123 })' || exit 1
+
+          echo "Verifying test data..."
+          docker exec mongodb-container mongosh --eval 'const count = db.test.countDocuments({ name: "test" }); if (count !== 1) throw new Error();' || exit 1
+
+          echo "Smoke tests passed!"
+
+      - name: Trashing container
+        if: always()
+        run: |
+          docker stop mongodb-container || true
+          docker rm mongodb-container || true

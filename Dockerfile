@@ -11,9 +11,9 @@ ARG MONGO_PACKAGE=mongodb-org
 ARG MONGO_REPO=repo.mongodb.org
 
 # REPLACED WITH USER COMMAND
-ARG GOSU_VERSION=1.17
-ARG GOSU_PGPKEY_FINGERPRINT=B42F6819007F00F88E364FD4036A9C25BF357DD4
-ARG GOSU_DOWNLOAD_URL=https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64
+# ARG GOSU_VERSION=1.17
+# ARG GOSU_PGPKEY_FINGERPRINT=B42F6819007F00F88E364FD4036A9C25BF357DD4
+# ARG GOSU_DOWNLOAD_URL=https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64
 
 ARG JSYAML_VERSION=3.13.1
 ARG JSYAML_CHECKSUM=662e32319bdd378e91f67578e56a34954b0a2e33aca11d70ab9f4826af24b941
@@ -42,16 +42,16 @@ RUN set -eux \
 	\
 	# REPLACED WITH USER COMMAND
 	# gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
-	&& wget -O /usr/local/bin/gosu $GOSU_DOWNLOAD_URL \
-	&& wget -O /usr/local/bin/gosu.asc "$GOSU_DOWNLOAD_URL.asc" \
-	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys ${GOSU_PGPKEY_FINGERPRINT} \
-	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
-	&& gpgconf --kill all \
-	&& chmod +x /usr/local/bin/gosu \
-	&& gosu --version \
-	&& gosu nobody true \
-	&& rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc \
+	# && wget -O /usr/local/bin/gosu $GOSU_DOWNLOAD_URL \
+	# && wget -O /usr/local/bin/gosu.asc "$GOSU_DOWNLOAD_URL.asc" \
+	# && export GNUPGHOME="$(mktemp -d)" \
+	# && gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys ${GOSU_PGPKEY_FINGERPRINT} \
+	# && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
+	# && gpgconf --kill all \
+	# && chmod +x /usr/local/bin/gosu \
+	# && gosu --version \
+	# && gosu nobody true \
+	# && rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc \
 	\
 	# js-yaml for parsing mongod's YAML config files (https://github.com/nodeca/js-yaml/releases)
 	&& mkdir -p /opt/js-yaml/ \
@@ -88,20 +88,18 @@ RUN set -eux \
 	&& mv /etc/mongod.conf /etc/mongod.conf.orig
 
 # Cleaning
-RUN set -eux \
-    && apt-get purge -y --auto-remove --allow-remove-essential \
-        wget \
-        gnupg \
-        perl-base \
-		hostname \
-		sed \
-		grep \
-		e2fsprogs \
-		logsave \
-		login \
-		util-linux \
-		sysvinit-utils \
-    && apt-get clean
+RUN apt-get purge -y --auto-remove --allow-remove-essential \
+    wget \
+    gnupg \
+    perl-base \
+	hostname \
+	sed \
+	grep \
+	e2fsprogs \
+	logsave \
+	login \
+	util-linux \
+	sysvinit-utils
 
 VOLUME /data/db /data/configdb
 
@@ -114,4 +112,6 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 EXPOSE 27017
+
+USER mongodb
 CMD ["mongod"]
