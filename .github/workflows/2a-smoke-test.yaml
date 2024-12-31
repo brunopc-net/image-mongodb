@@ -1,11 +1,7 @@
 name: Smoke tests
 
 on:
-  workflow_run:
-    workflows:
-      - Build Docker image
-    types:
-      - completed
+  workflow_call:
 
 jobs:
   smoke-tests:

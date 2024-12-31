@@ -1,11 +1,7 @@
 name: Vulnerability scan
 
 on:
-  workflow_run:
-    workflows:
-      - Build Docker image
-    types:
-      - completed
+  workflow_call:
 
 jobs:
   vuln-scan:

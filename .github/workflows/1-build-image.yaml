@@ -1,10 +1,7 @@
 name: Build Docker image
 
 on:
-  push:
-    branches:
-      - '**'
-      - '!latest'
+  workflow_call:
 
 jobs:
   build-docker-image:
