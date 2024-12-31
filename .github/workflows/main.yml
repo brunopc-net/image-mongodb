@@ -7,13 +7,13 @@ on:
       - '!latest'
 
 jobs:
-  build-image:
+  build:
     uses: ./.github/workflows/1-build-image.yml
 
-  smoke-test:
-    needs: build-image
+  test:
+    needs: build
     uses: ./.github/workflows/2a-smoke-test.yml
 
   vuln-scan:
-    needs: build-image
+    needs: build
     uses: ./.github/workflows/2b-vuln-scan.yml

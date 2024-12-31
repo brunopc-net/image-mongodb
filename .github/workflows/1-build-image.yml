@@ -4,7 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  build-docker-image:
+  docker-image:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,14 +19,24 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-
+    
     - name: Build MongoDB Docker image
-      run: |
-        docker build \
-          --build-arg MONGO_VERSION=$VERSION \
-          -t mongodb:$VERSION \
-          -t mongodb:latest \
-          .
+      uses: docker/build-push-action@v6
+      with:
+        push: false
+        build-args: MONGO_VERSION=$VERSION
+        tags: mongodb:$VERSION,mongodb:latest
+        context: .
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    # - name: Build MongoDB Docker image
+    #   run: |
+    #     docker build \
+    #       --build-arg MONGO_VERSION=$VERSION \
+    #       -t mongodb:$VERSION \
+    #       -t mongodb:latest \
+    #       .
     
     - name: Save Docker image as tarball
       run: docker save mongodb -o mongodb-image.tar
