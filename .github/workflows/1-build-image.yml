@@ -24,7 +24,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         push: false
-        build-args: MONGO_VERSION=$VERSION
+        build-args: MONGO_VERSION=${{ env.VERSION }}
         tags: mongodb:${{ env.VERSION }},mongodb:latest
         context: .
         cache-from: type=gha
