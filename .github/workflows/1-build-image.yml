@@ -39,7 +39,7 @@ jobs:
     #       .
     
     - name: Save Docker image as tarball
-      run: docker save mongodb -o mongodb-image.tar
+      run: docker save mongodb:latest -o mongodb-image.tar
 
     - name: Cache Docker image tarball
       uses: actions/cache@v4
