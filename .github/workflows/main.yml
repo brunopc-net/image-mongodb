@@ -7,6 +7,27 @@ on:
       - '!latest'
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check vars.DOCKERHUB_USERNAME
+        run: |
+          if [ -z "${{ vars.DOCKERHUB_USERNAME }}" ]; then
+              echo "Var DOCKERHUB_USERNAME is not set."
+              exit 1
+          else
+              echo "Var DOCKERHUB_USERNAME exists."
+          fi
+
+      - name: Check secrets.DOCKERHUB_PASSWORD
+        run: |
+          if [ -z "${{ secrets.DOCKERHUB_PASSWORD }}" ]; then
+              echo "Secret DOCKERHUB_PASSWORD is not set."
+              exit 1
+          else
+              echo "Secret DOCKERHUB_PASSWORD exists."
+          fi
+
   build:
     uses: ./.github/workflows/1-build-image.yml
 
