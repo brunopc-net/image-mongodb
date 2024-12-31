@@ -4,7 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  smoke-tests:
+  smoke:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,20 +26,20 @@ jobs:
               --eval 'db.runCommand({ ping: 1 })'" \
           mongodb
     
-      - name: Wait for MongoDB to be ready
-        run: |
-          for i in {1..60}; do
-            if docker inspect --format='{{json .State.Health.Status}}' mongodb-container | grep -q '"healthy"'; then
-              echo "MongoDB is ready!";
-              break;
-            fi;
-            echo "Waiting for MongoDB...";
-            sleep 1;
-          done
-          if [ $i -eq 60 ]; then
-            echo "MongoDB did not become healthy in time";
-            exit 1;
-          fi
+      # - name: Wait for MongoDB to be ready
+      #   run: |
+      #     for i in {1..60}; do
+      #       if docker inspect --format='{{json .State.Health.Status}}' mongodb-container | grep -q '"healthy"'; then
+      #         echo "MongoDB is ready!";
+      #         break;
+      #       fi;
+      #       echo "Waiting for MongoDB...";
+      #       sleep 1;
+      #     done
+      #     if [ $i -eq 60 ]; then
+      #       echo "MongoDB did not become healthy in time";
+      #       exit 1;
+      #     fi
     
       - name: Run smoke tests
         run: |

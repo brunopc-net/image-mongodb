@@ -4,7 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  vuln-scan:
+  trivy:
     runs-on: ubuntu-latest
 
     steps:
