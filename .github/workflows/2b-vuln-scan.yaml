@@ -8,7 +8,7 @@ on:
       - completed
 
 jobs:
-  build-and-test:
+  vuln-scan:
     runs-on: ubuntu-latest
 
     steps:

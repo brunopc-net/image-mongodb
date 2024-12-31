@@ -7,7 +7,7 @@ on:
       - '!main'
 
 jobs:
-  build-and-test:
+  build-docker-image:
     runs-on: ubuntu-latest
 
     steps:
