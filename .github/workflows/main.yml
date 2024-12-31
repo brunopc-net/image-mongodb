@@ -4,11 +4,15 @@ on:
   push:
     branches:
       - '**'
-      - '!latest'
+    branches-ignore:
+      - 'latest'
 
 jobs:
   prepare:
     uses: ./.github/workflows/0-prepare.yml
+    with:
+      DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build:
     needs: prepare
