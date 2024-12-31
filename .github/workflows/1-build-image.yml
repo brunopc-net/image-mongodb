@@ -30,14 +30,6 @@ jobs:
         context: .
         cache-from: type=gha
         cache-to: type=gha,mode=max
-
-    # - name: Build MongoDB Docker image
-    #   run: |
-    #     docker build \
-    #       --build-arg MONGO_VERSION=$VERSION \
-    #       -t mongodb:$VERSION \
-    #       -t mongodb:latest \
-    #       .
     
     - name: Save Docker image as tarball
       run: docker save mongodb:latest -o mongodb-image.tar
