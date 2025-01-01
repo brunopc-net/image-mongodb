@@ -15,7 +15,7 @@ jobs:
       run: |
         # Get the version from branch name
         VERSION=${GITHUB_REF#refs/heads/}
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        echo "MONGO_VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -26,13 +26,13 @@ jobs:
         push: false
         load: true
         build-args: MONGO_VERSION=${{ env.VERSION }}
-        tags: mongodb:${{ env.VERSION }},mongodb:latest
+        tags: mongodb:${{ env.VERSION }}
         context: .
         cache-from: type=gha
         cache-to: type=gha,mode=max
     
     - name: Save Docker image as tarball
-      run: docker save mongodb:latest -o mongodb-image.tar
+      run: docker save mongodb -o mongodb-image.tar
 
     - name: Cache Docker image tarball
       uses: actions/cache@v4
