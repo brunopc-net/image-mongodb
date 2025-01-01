@@ -31,7 +31,7 @@ jobs:
         cache-to: type=gha,mode=max
     
     - name: Save Docker image as tarball
-      run: docker save ${{ vars.DOCKERHUB_USERNAME }}/mongodb -o mongodb-image.tar
+      run: docker save mongodb -o mongodb-image.tar
 
     - name: Cache Docker image tarball
       uses: actions/cache@v4
