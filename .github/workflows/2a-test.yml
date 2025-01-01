@@ -29,9 +29,9 @@ jobs:
       - name: Write to MongoDB
         run: |
           docker exec mongodb-container mongosh --eval '
-            db.test.insertOne({ name: "test", value: 123 });
-            const count = db.test.countDocuments({ name: "test" });
-            if (count !== 1) throw new Error();
+            db.test.insertOne({ name: "test", value: 123 }); \
+            const count = db.test.countDocuments({ name: "test" }); \
+            if (count !== 1) throw new Error(); \
           ' || exit 1
 
       - name: Trashing container
