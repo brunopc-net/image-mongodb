@@ -24,8 +24,8 @@ jobs:
         load: true
         build-args: MONGO_VERSION=${{ env.MONGO_VERSION }}
         tags: |
-          ${{ vars.DOCKERHUB_USERNAME }}/mongodb:${{ env.MONGO_VERSION }}
-          ${{ vars.DOCKERHUB_USERNAME }}/mongodb:latest
+          mongodb:${{ env.MONGO_VERSION }}
+          mongodb:latest
         context: .
         cache-from: type=gha
         cache-to: type=gha,mode=max
