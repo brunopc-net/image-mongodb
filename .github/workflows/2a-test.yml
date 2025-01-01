@@ -31,14 +31,14 @@ jobs:
           docker exec mongodb-container mongosh --eval '
             db.test.insertOne({ key:1, value:7 });
             const count = db.test.countDocuments({ key:1 });
-            if (count !== 1) throw new Error("Can't insert document");
+            if (count !== 1) throw new Error("Cannot insert document");
           '
 
       - name: Read document in MongoDB
         run: |
           docker exec mongodb-container mongosh --eval '
             const doc = db.test.findOne({ key:1 });
-            if (!doc || doc.value !== 7) throw new Error("Can't read document");
+            if (!doc || doc.value !== 1) throw new Error("Cannot read document");
           '
 
       - name: Trashing container
