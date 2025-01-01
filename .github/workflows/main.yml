@@ -12,17 +12,18 @@ jobs:
     secrets: inherit
 
   build:
-    uses: ./.github/workflows/1-build-image.yml
+    uses: ./.github/workflows/1-build.yml
+    secrets: inherit
 
   test:
     needs: build
-    uses: ./.github/workflows/2a-smoke-test.yml
+    uses: ./.github/workflows/2a-test.yml
 
-  vuln-scan:
+  scan:
     needs: build
-    uses: ./.github/workflows/2b-vuln-scan.yml
+    uses: ./.github/workflows/2b-scan.yml
 
   push:
-    needs: [test, vuln-scan]
+    needs: [test, scan]
     uses: ./.github/workflows/3-push.yml
     secrets: inherit
