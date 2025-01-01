@@ -13,9 +13,10 @@ jobs:
       - name: Check DOCKERHUB_TOKEN
         run: if [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then exit 1; fi
 
-      - name: Validate Branch Name
+      - name: Check MONGO_VERSION
         run: |
-          if [[ ! "${{ github.ref_name }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "❌ Branch name is not X.X.X [${{ github.ref_name }}]"
+          if [ -z "${{ env.MONGO_VERSION }}" ]; then exit 1; fi
+          if [[ ! "${{ env.MONGO_VERSION }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Branch name is not X.X.X [${{ env.MONGO_VERSION }}]"
             exit 1
           fi
