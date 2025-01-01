@@ -27,5 +27,6 @@ jobs:
 
       - name: Push image to Docker Hub
         run: |
-          docker tag mongodb:latest ${{ vars.DOCKERHUB_USERNAME }}/mongodb:${{ env.MONGO_VERSION }}
-          docker push ${{ vars.DOCKERHUB_USERNAME }}/mongodb:${{ env.MONGO_VERSION }}
+          IMAGE=${{ vars.DOCKERHUB_USERNAME }}/mongodb:${{ env.MONGO_VERSION }}
+          docker tag mongodb:latest $IMAGE
+          docker push $IMAGE
