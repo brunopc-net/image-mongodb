@@ -48,14 +48,12 @@ jobs:
           }
 
           print() {
-            echo "$1" | jq -r '
-              .[] |
+            echo "$1" | jq -r '.[] |
               if .FixedVersion == null then
                 "\(.Severity) - \(.VulnerabilityID) - \(.Title)"
               else
                 "\(.Severity) - \(.VulnerabilityID) - \(.Title) - Fixed Version: \(.FixedVersion)"
-              end
-            ' | sort | uniq
+            end' | sort | uniq
           }
 
           CRIT_VULN=$(get_vulnerabilities "CRITICAL")
