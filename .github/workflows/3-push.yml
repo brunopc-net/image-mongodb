@@ -7,6 +7,9 @@ jobs:
   dockerhub:
     runs-on: ubuntu-latest
     steps:
+      - name: Extract version from branch name
+        run: echo "MONGO_VERSION=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+
       - name: Log in to Docker Hub
         run: |
           docker login \
