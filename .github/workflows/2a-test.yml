@@ -26,18 +26,13 @@ jobs:
               --eval 'db.runCommand({ ping: 1 })'" \
           mongodb
     
-      - name: Run smoke tests
+      - name: Write to MongoDB
         run: |
-          echo "Testing MongoDB connection..."
-          docker exec mongodb-container mongosh --eval 'db.runCommand({ ping: 1 })' || exit 1
-
-          echo "Inserting test data..."
-          docker exec mongodb-container mongosh --eval 'db.test.insertOne({ name: "test", value: 123 })' || exit 1
-
-          echo "Verifying test data..."
-          docker exec mongodb-container mongosh --eval 'const count = db.test.countDocuments({ name: "test" }); if (count !== 1) throw new Error();' || exit 1
-
-          echo "Smoke tests passed!"
+          docker exec mongodb-container mongosh --eval '
+            db.test.insertOne({ name: "test", value: 123 });
+            const count = db.test.countDocuments({ name: "test" });
+            if (count !== 1) throw new Error();
+          ' || exit 1
 
       - name: Trashing container
         if: always()
