@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Set DockerHub Token as environment variables
         run: |
-          echo "DOCKERHUB_TOKEN=${{ secrets.DOCKERHUB_TOKEN }}"
+          echo "DOCKERHUB_TOKEN=${{ secrets.DOCKERHUB_TOKEN }} >> $GITHUB_ENV"
     
       - name: Check DOCKERHUB_USERNAME
         run: |
@@ -22,7 +22,7 @@ jobs:
 
       - name: Check DOCKERHUB_TOKEN
         run: |
-          if [ -z "$DOCKERHUB_TOKEN" ]; then
+          if [ -z "${{ vars.DOCKERHUB_TOKEN }}" ]; then
               echo "❌ Value is not set."
               exit 1
           else
