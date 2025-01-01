@@ -8,6 +8,7 @@ on:
 jobs:
   prepare:
     uses: ./.github/workflows/0-prepare.yml
+    secrets: inherit
 
   build:
     uses: ./.github/workflows/1-build-image.yml
@@ -22,4 +23,5 @@ jobs:
 
   push:
     needs: [test, vuln-scan]
-    uses: ./.github/workflows/3-push.yml  
+    uses: ./.github/workflows/3-push.yml
+    secrets: inherit
