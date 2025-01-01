@@ -7,33 +7,15 @@ jobs:
   check-inputs:
     runs-on: ubuntu-latest
     steps:
-      - name: Set DockerHub Token as environment variables
-        run: |
-          echo "DOCKERHUB_TOKEN=${{ secrets.DOCKERHUB_TOKEN }} >> $GITHUB_ENV"
-    
       - name: Check DOCKERHUB_USERNAME
-        run: |
-          if [ -z "${{ vars.DOCKERHUB_USERNAME }}" ]; then
-              echo "❌ Value is not set."
-              exit 1
-          else
-              echo "✅ Value exists."
-          fi
+        run: if [ -z "${{ vars.DOCKERHUB_USERNAME }}" ]; then exit 1; fi
 
       - name: Check DOCKERHUB_TOKEN
-        run: |
-          if [ -z "${{ env.DOCKERHUB_TOKEN }}" ]; then
-              echo "❌ Value is not set."
-              exit 1
-          else
-              echo "✅ Value exists."
-          fi
+        run: if [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then exit 1; fi
 
       - name: Validate Branch Name
         run: |
-          if [[ "${{ github.ref_name }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "✅ Branch name is valid: ${{ github.ref_name }}"
-          else
-            echo "❌ Branch name is invalid: ${{ github.ref_name }}"
+          if [[ ! "${{ github.ref_name }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Branch name is not X.X.X [${{ github.ref_name }}]"
             exit 1
           fi
