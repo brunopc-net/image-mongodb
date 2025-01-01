@@ -4,7 +4,22 @@ on:
   workflow_call:
 
 jobs:
-  check-inputs:
+  mongo_version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract version from branch name
+        run: |
+          echo "MONGO_VERSION=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+
+      - name: Check MONGO_VERSION
+        run: |
+          if [ -z "${{ env.MONGO_VERSION }}" ]; then exit 1; fi
+          if [[ ! "${{ env.MONGO_VERSION }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Branch name is not X.X.X ["${{ env.MONGO_VERSION }}"]"
+            exit 1
+          fi
+
+  docker-login:
     runs-on: ubuntu-latest
     steps:
       - name: Check DOCKERHUB_USERNAME
@@ -12,12 +27,3 @@ jobs:
 
       - name: Check DOCKERHUB_TOKEN
         run: if [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then exit 1; fi
-
-      - name: Check MONGO_VERSION
-        run: |
-          echo "MONGO_VERSION=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-          if [ -z "${{ env.MONGO_VERSION }}" ]; then exit 1; fi
-          if [[ ! "${{ env.MONGO_VERSION }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "❌ Branch name is not X.X.X ["${{ env.MONGO_VERSION }}"]"
-            exit 1
-          fi
