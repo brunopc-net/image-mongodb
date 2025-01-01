@@ -26,12 +26,20 @@ jobs:
               --eval 'db.runCommand({ ping: 1 })'" \
           mongodb
     
-      - name: Write to MongoDB
+      - name: Insert document in MongoDB
         run: |
           docker exec mongodb-container mongosh --eval '
             db.test.insertOne({ name: "test", value: 123 });
             const count = db.test.countDocuments({ name: "tes" });
-            if (count !== 1) throw new Error();'
+            if (count !== 1) throw new Error("Can't insert document");
+          '
+
+      - name: Read document in MongoDB
+        run: |
+          docker exec mongodb-container mongosh --eval '
+            const doc = db.test.findOne({ name: "test" });
+            if (!doc || doc.value !== 122) throw new Error("Can't read document");
+          '
 
       - name: Trashing container
         if: always()
