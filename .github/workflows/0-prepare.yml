@@ -6,9 +6,11 @@ on:
 jobs:
   check-inputs:
     runs-on: ubuntu-latest
-    env:
-      DOCKERHUB_USERNAME: 
     steps:
+      - name: Set DockerHub Token as environment variables
+        run: |
+          echo "DOCKERHUB_TOKEN=${{ secrets.DOCKERHUB_TOKEN }}"
+    
       - name: Check DOCKERHUB_USERNAME
         run: |
           if [ -z "${{ vars.DOCKERHUB_USERNAME }}" ]; then
@@ -20,7 +22,7 @@ jobs:
 
       - name: Check DOCKERHUB_TOKEN
         run: |
-          if [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
+          if [ -z "$DOCKERHUB_TOKEN" ]; then
               echo "❌ Value is not set."
               exit 1
           else
