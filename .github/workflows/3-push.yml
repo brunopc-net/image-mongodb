@@ -20,4 +20,4 @@ jobs:
         run: docker load -i mongodb-image.tar
     
       - name: Push image to Docker Hub
-        run: docker push mongodb
+        run: docker push mongodb:${{ env.MONGO_VERSION }}

@@ -24,7 +24,6 @@ jobs:
         push: false
         load: true
         build-args: MONGO_VERSION=${{ env.MONGO_VERSION }}
-        tags: mongodb:${{ env.MONGO_VERSION }}
         context: .
         cache-from: type=gha
         cache-to: type=gha,mode=max
