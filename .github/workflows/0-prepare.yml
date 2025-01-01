@@ -22,7 +22,7 @@ jobs:
 
       - name: Check DOCKERHUB_TOKEN
         run: |
-          if [ -z "${{ vars.DOCKERHUB_TOKEN }}" ]; then
+          if [ -z "${{ env.DOCKERHUB_TOKEN }}" ]; then
               echo "❌ Value is not set."
               exit 1
           else
