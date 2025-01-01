@@ -8,12 +8,8 @@ on:
 jobs:
   prepare:
     uses: ./.github/workflows/0-prepare.yml
-    with:
-      DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build:
-    needs: prepare
     uses: ./.github/workflows/1-build-image.yml
 
   test:

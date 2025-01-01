@@ -2,23 +2,16 @@ name: Prepare
 
 on:
   workflow_call:
-    inputs:
-      DOCKERHUB_USERNAME:
-        description: "Docker Hub username"
-        type: string
-        required: true
-      DOCKERHUB_TOKEN:
-        description: "Docker Hub token"
-        type: string
-        required: true
 
 jobs:
   check-inputs:
     runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_USERNAME: 
     steps:
       - name: Check DOCKERHUB_USERNAME
         run: |
-          if [ -z "${{ inputs.DOCKERHUB_USERNAME }}" ]; then
+          if [ -z "${{ vars.DOCKERHUB_USERNAME }}" ]; then
               echo "❌ Value is not set."
               exit 1
           else
@@ -27,7 +20,7 @@ jobs:
 
       - name: Check DOCKERHUB_TOKEN
         run: |
-          if [ -z "${{ inputs.DOCKERHUB_TOKEN }}" ]; then
+          if [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
               echo "❌ Value is not set."
               exit 1
           else
