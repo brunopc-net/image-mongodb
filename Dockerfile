@@ -99,7 +99,11 @@ RUN apt-get purge -y --auto-remove --allow-remove-essential \
 	logsave \
 	login \
 	util-linux \
-	sysvinit-utils
+	sysvinit-utils \
+	apt \
+	gpgv \
+	sensible-utils \
+	findutils
 
 VOLUME /data/db /data/configdb
 
