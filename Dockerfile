@@ -2,22 +2,19 @@
 FROM ubuntu:noble-20241118.1
 
 ARG MONGO_VERSION
-ARG MONGO_MAJOR="${MONGO_VERSION%.*}"
-ARG MONGO_PGPKEY_FINGERPRINT=4B0752C1BCA238C0B4EE14DC41DE058A4E7DCA05 \
-	MONGO_PGPKEY_URL=https://pgp.mongodb.com/server-${MONGO_MAJOR}.asc \
-	# Options for MONGO_PACKAGE: mongodb-org OR mongodb-enterprise
+ARG MONGO_MAJOR="${MONGO_VERSION%.*}" \
+	MONGO_PGPKEY_FINGERPRINT=4B0752C1BCA238C0B4EE14DC41DE058A4E7DCA05 \
 	MONGO_PACKAGE=mongodb-org \
-	# Options for MONGO_REPO: repo.mongodb.org OR repo.mongodb.com
-	MONGO_REPO=repo.mongodb.org
-
-# REPLACED WITH USER COMMAND
-# ARG GOSU_VERSION=1.17
-# ARG GOSU_PGPKEY_FINGERPRINT=B42F6819007F00F88E364FD4036A9C25BF357DD4
-# ARG GOSU_DOWNLOAD_URL=https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64
-
-ARG JSYAML_VERSION=3.13.1
-ARG JSYAML_CHECKSUM=662e32319bdd378e91f67578e56a34954b0a2e33aca11d70ab9f4826af24b941
-ARG JSYAML_DOWNLOAD_URL=https://registry.npmjs.org/js-yaml/-/js-yaml-${JSYAML_VERSION}.tgz
+	# MONGO_PACKAGE=mongodb-enterprise \
+	MONGO_REPO=repo.mongodb.org \
+	# MONGO_REPO=repo.mongodb.com \
+	\
+	JSYAML_VERSION=3.13.1 \
+	JSYAML_CHECKSUM=662e32319bdd378e91f67578e56a34954b0a2e33aca11d70ab9f4826af24b941
+	# \
+	# REPLACED WITH USER COMMAND
+	# GOSU_VERSION=1.17 \
+	# GOSU_PGPKEY_FINGERPRINT=B42F6819007F00F88E364FD4036A9C25BF357DD4
 
 # Dependencies
 RUN set -eux \
@@ -37,10 +34,18 @@ RUN set -eux \
 		gnupg \
 		wget \
 	\
+	# js-yaml for parsing mongod's YAML config files (https://github.com/nodeca/js-yaml/releases)
+	&& mkdir -p /opt/js-yaml/ \
+	&& wget -O /opt/js-yaml/js-yaml.tgz https://registry.npmjs.org/js-yaml/-/js-yaml-${JSYAML_VERSION}.tgz \
+	&& echo "$JSYAML_CHECKSUM */opt/js-yaml/js-yaml.tgz" | sha256sum -c - \
+	&& tar -xz --strip-components=1 -f /opt/js-yaml/js-yaml.tgz -C /opt/js-yaml package/dist/js-yaml.js package/package.json \
+	&& ln -s /opt/js-yaml/dist/js-yaml.js /js-yaml.js \
+	&& rm -rf /opt/js-yaml/js-yaml.tgz /var/lib/apt/lists/* /tmp/* /var/tmp/*
+	# \
 	# REPLACED WITH USER COMMAND
 	# gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
-	# && wget -O /usr/local/bin/gosu $GOSU_DOWNLOAD_URL \
-	# && wget -O /usr/local/bin/gosu.asc "$GOSU_DOWNLOAD_URL.asc" \
+	# && wget -O /usr/local/bin/gosu https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64 \
+	# && wget -O /usr/local/bin/gosu.asc https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64.asc \
 	# && export GNUPGHOME="$(mktemp -d)" \
 	# && gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys ${GOSU_PGPKEY_FINGERPRINT} \
 	# && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
@@ -49,14 +54,6 @@ RUN set -eux \
 	# && gosu --version \
 	# && gosu nobody true \
 	# && rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc \
-	\
-	# js-yaml for parsing mongod's YAML config files (https://github.com/nodeca/js-yaml/releases)
-	&& mkdir -p /opt/js-yaml/ \
-	&& wget -O /opt/js-yaml/js-yaml.tgz ${JSYAML_DOWNLOAD_URL} \
-	&& echo "$JSYAML_CHECKSUM */opt/js-yaml/js-yaml.tgz" | sha256sum -c - \
-	&& tar -xz --strip-components=1 -f /opt/js-yaml/js-yaml.tgz -C /opt/js-yaml package/dist/js-yaml.js package/package.json \
-	&& ln -s /opt/js-yaml/dist/js-yaml.js /js-yaml.js \
-	&& rm -rf /opt/js-yaml/js-yaml.tgz /var/lib/apt/lists/* /tmp/* /var/tmp/*
 	
 
 # Mongo
@@ -64,7 +61,7 @@ RUN set -eux \
 	&& mkdir /docker-entrypoint-initdb.d \
 	# PGP Keys
 	&& export GNUPGHOME="$(mktemp -d)" \
-	&& wget -O KEYS ${MONGO_PGPKEY_URL} \
+	&& wget -O KEYS https://pgp.mongodb.com/server-${MONGO_MAJOR}.asc \
 	&& gpg --batch --import KEYS \
 	&& mkdir -p /etc/apt/keyrings \
 	&& gpg --batch --export --armor ${MONGO_PGPKEY_FINGERPRINT} > /etc/apt/keyrings/mongodb.asc \
