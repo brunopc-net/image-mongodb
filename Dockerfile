@@ -76,7 +76,6 @@ RUN set -eux \
 	&& echo "deb [ signed-by=/etc/apt/keyrings/mongodb.asc ] http://$MONGO_REPO/apt/ubuntu noble/${MONGO_PACKAGE}/$MONGO_MAJOR multiverse" \
 		| tee "/etc/apt/sources.list.d/${MONGO_PACKAGE}.list" \
 	&& apt-get update && apt-get install -y \
-		mongodb-mongosh \
 		${MONGO_PACKAGE}=$MONGO_VERSION \
 		${MONGO_PACKAGE}-server=$MONGO_VERSION \
 		${MONGO_PACKAGE}-shell=$MONGO_VERSION \
@@ -100,10 +99,10 @@ RUN apt-get purge -y --auto-remove --allow-remove-essential \
 	login \
 	util-linux \
 	sysvinit-utils \
-	apt \
-	gpgv \
 	sensible-utils \
-	findutils
+	findutils \
+	apt \
+	gpgv
 
 VOLUME /data/db /data/configdb
 
