@@ -3,12 +3,12 @@ FROM ubuntu:noble-20241118.1
 
 ARG MONGO_VERSION
 ARG MONGO_MAJOR="${MONGO_VERSION%.*}"
-ARG MONGO_PGPKEY_FINGERPRINT=4B0752C1BCA238C0B4EE14DC41DE058A4E7DCA05
-ARG MONGO_PGPKEY_URL=https://pgp.mongodb.com/server-${MONGO_MAJOR}.asc
-# Options for MONGO_PACKAGE: mongodb-org OR mongodb-enterprise
-ARG MONGO_PACKAGE=mongodb-org
-# Options for MONGO_REPO: repo.mongodb.org OR repo.mongodb.com
-ARG MONGO_REPO=repo.mongodb.org
+ARG MONGO_PGPKEY_FINGERPRINT=4B0752C1BCA238C0B4EE14DC41DE058A4E7DCA05 \
+	MONGO_PGPKEY_URL=https://pgp.mongodb.com/server-${MONGO_MAJOR}.asc \
+	# Options for MONGO_PACKAGE: mongodb-org OR mongodb-enterprise
+	MONGO_PACKAGE=mongodb-org \
+	# Options for MONGO_REPO: repo.mongodb.org OR repo.mongodb.com
+	MONGO_REPO=repo.mongodb.org
 
 # REPLACED WITH USER COMMAND
 # ARG GOSU_VERSION=1.17
@@ -18,8 +18,6 @@ ARG MONGO_REPO=repo.mongodb.org
 ARG JSYAML_VERSION=3.13.1
 ARG JSYAML_CHECKSUM=662e32319bdd378e91f67578e56a34954b0a2e33aca11d70ab9f4826af24b941
 ARG JSYAML_DOWNLOAD_URL=https://registry.npmjs.org/js-yaml/-/js-yaml-${JSYAML_VERSION}.tgz
-
-RUN echo MONGO_VERSION=${MONGO_VERSION} && echo MONGO_MAJOR=${MONGO_MAJOR}
 
 # Dependencies
 RUN set -eux \
@@ -38,7 +36,6 @@ RUN set -eux \
 		# Not in the final image - no pinning required
 		gnupg \
 		wget \
-	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
 	\
 	# REPLACED WITH USER COMMAND
 	# gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
@@ -58,8 +55,9 @@ RUN set -eux \
 	&& wget -O /opt/js-yaml/js-yaml.tgz ${JSYAML_DOWNLOAD_URL} \
 	&& echo "$JSYAML_CHECKSUM */opt/js-yaml/js-yaml.tgz" | sha256sum -c - \
 	&& tar -xz --strip-components=1 -f /opt/js-yaml/js-yaml.tgz -C /opt/js-yaml package/dist/js-yaml.js package/package.json \
-	&& rm /opt/js-yaml/js-yaml.tgz \
-	&& ln -s /opt/js-yaml/dist/js-yaml.js /js-yaml.js
+	&& ln -s /opt/js-yaml/dist/js-yaml.js /js-yaml.js \
+	&& rm -rf /opt/js-yaml/js-yaml.tgz /var/lib/apt/lists/* /tmp/* /var/tmp/*
+	
 
 # Mongo
 RUN set -eux \
@@ -71,7 +69,6 @@ RUN set -eux \
 	&& mkdir -p /etc/apt/keyrings \
 	&& gpg --batch --export --armor ${MONGO_PGPKEY_FINGERPRINT} > /etc/apt/keyrings/mongodb.asc \
 	&& gpgconf --kill all \
-	&& rm -rf "$GNUPGHOME" KEYS \
 	# Installation
 	&& echo "deb [ signed-by=/etc/apt/keyrings/mongodb.asc ] http://$MONGO_REPO/apt/ubuntu noble/${MONGO_PACKAGE}/$MONGO_MAJOR multiverse" \
 		| tee "/etc/apt/sources.list.d/${MONGO_PACKAGE}.list" \
@@ -83,8 +80,9 @@ RUN set -eux \
 		${MONGO_PACKAGE}-tools=$MONGO_VERSION \
 		${MONGO_PACKAGE}-database=$MONGO_VERSION \
 		${MONGO_PACKAGE}-database-tools-extra=$MONGO_VERSION \
-	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/lib/mongodb\
-	&& mv /etc/mongod.conf /etc/mongod.conf.orig
+	&& mv /etc/mongod.conf /etc/mongod.conf.orig \
+	# Cleaning
+	&& rm -rf "$GNUPGHOME" KEYS /var/lib/mongodb /var/lib/apt/lists/* /tmp/* /var/tmp/* 
 
 # Cleaning
 RUN apt-get purge -y --auto-remove --allow-remove-essential \
@@ -101,8 +99,10 @@ RUN apt-get purge -y --auto-remove --allow-remove-essential \
 	sysvinit-utils \
 	sensible-utils \
 	findutils \
+	bsdutils \
 	apt \
-	gpgv
+	gpgv \
+	gzip
 
 VOLUME /data/db /data/configdb
 
