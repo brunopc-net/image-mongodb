@@ -40,6 +40,7 @@ RUN set -eux \
 	&& echo "$JSYAML_CHECKSUM */opt/js-yaml/js-yaml.tgz" | sha256sum -c - \
 	&& tar -xz --strip-components=1 -f /opt/js-yaml/js-yaml.tgz -C /opt/js-yaml package/dist/js-yaml.js package/package.json \
 	&& ln -s /opt/js-yaml/dist/js-yaml.js /js-yaml.js \
+	# Cleaning
 	&& rm -rf /opt/js-yaml/js-yaml.tgz /var/lib/apt/lists/* /tmp/* /var/tmp/*
 	# \
 	# REPLACED WITH USER COMMAND
