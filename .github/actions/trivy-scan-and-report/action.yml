@@ -1,12 +1,12 @@
-name: Trivy Scan and Report
-description: Scan Docker images for vulnerabilities and generate an aggregated vulnerability report.
+name: Scan and Report
+description: Scan Docker images for vulnerabilities (CVEs) and generate an aggregated vulnerability report.
 inputs:
   image-ref:
     description: The Docker image to scan.
     required: true
-  output:
-    description: Path to save the Trivy JSON report.
-    default: trivy-report.json
+  report-output:
+    description: Filename of the JSON report
+    default: cve-report.json
   blocking-level:
     description: Level of pipeline blocking
     options:
@@ -18,7 +18,7 @@ inputs:
         - 5 # All
     default: 3
 runs:
-  using: composite
+  using: ubuntu-latest
   steps:
     - name: Scan for vulnerabilities
       uses: aquasecurity/trivy-action@0.28.0
@@ -27,7 +27,7 @@ runs:
         image-ref: ${{ inputs.image-ref }}
         scanners: vuln
         format: json
-        output: ${{ inputs.output }}
+        output: ${{ inputs.report-output }}
         severity: CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN
         hide-progress: true
 
