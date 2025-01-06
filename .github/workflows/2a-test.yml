@@ -8,14 +8,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/cache/restore@v4
-        id: cache
-        with:
-          path: mongodb-image.tar
-          key: ${{ runner.os }}-docker-${{ github.sha }}
+      # - uses: actions/cache/restore@v4
+      #   id: cache
+      #   with:
+      #     path: mongodb-image.tar
+      #     key: ${{ runner.os }}-docker-${{ github.sha }}
 
-      - name: Load Docker image from cached tarball
-        run: docker load -i mongodb-image.tar
+      # - name: Load Docker image from cached tarball
+      #   run: docker load -i mongodb-image.tar
 
       - name: Start MongoDB container
         run: |
@@ -24,7 +24,7 @@ jobs:
               -p 27017:27017 \
               --health-cmd "mongosh \
               --eval 'db.runCommand({ ping: 1 })'" \
-          mongodb
+          ghcr.io/${{ github.actor }}/mongodb:${{ env.MONGO_VERSION }}
     
       - name: Insert document
         run: |

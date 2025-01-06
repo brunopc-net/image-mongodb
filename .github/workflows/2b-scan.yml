@@ -8,14 +8,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/cache/restore@v4
-        id: cache
-        with:
-          path: mongodb-image.tar
-          key: ${{ runner.os }}-docker-${{ github.sha }}
+      # - uses: actions/cache/restore@v4
+      #   id: cache
+      #   with:
+      #     path: mongodb-image.tar
+      #     key: ${{ runner.os }}-docker-${{ github.sha }}
         
-      - name: Load Docker image from cached tarball
-        run: docker load -i mongodb-image.tar
+      # - name: Load Docker image from cached tarball
+      #   run: docker load -i mongodb-image.tar
       
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,4 +23,4 @@ jobs:
       - name: Run CVEs scan
         uses: ./.github/actions/cve-scan
         with:
-          image-ref: mongodb
+          image-ref: ghcr.io/${{ github.actor }}/mongodb:${{ env.MONGO_VERSION }}
