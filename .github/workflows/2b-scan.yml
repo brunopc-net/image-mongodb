@@ -23,10 +23,9 @@ jobs:
       - name: Debug Repository Content
         run: |
           echo ============
-          ls ./
+          ls ./.github/actions
           echo ============
-          ls .//
-          echo ============
+          ls ./.github/actions/trivy-scan-and-report
 
       - name: Run Trivy Scan
         uses: ./.github/actions/trivy-scan-and-report
