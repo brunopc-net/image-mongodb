@@ -17,6 +17,9 @@ jobs:
       - name: Load Docker image from cached tarball
         run: docker load -i mongodb-image.tar
       
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Debug Repository Content
         run: |
           echo ============
