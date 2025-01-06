@@ -11,7 +11,7 @@ cat $REPORT
 
 # Function to extract vulnerabilities by severity
 get_vulnerabilities() {
-  jq -r "[.Results[] | .VULN[] | select(.Severity == \"${1}\")]" "$REPORT"
+  jq -r "[.Results[] | .Vulnerabilities[] | select(.Severity == \"${1}\")]" "$REPORT"
 }
 
 # Function to get non-fixable vulnerabilities
