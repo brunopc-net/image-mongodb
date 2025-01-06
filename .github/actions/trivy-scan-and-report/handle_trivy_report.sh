@@ -4,6 +4,8 @@
 BLOCKING_LEVEL="$1"
 REPORT="$2"
 
+echo "REPORT=$REPORT"
+
 # Function to extract vulnerabilities by severity
 get_vulnerabilities() {
   jq -r "[.Results[] | .VULN[] | select(.Severity == \"${1}\")]" "$REPORT"
