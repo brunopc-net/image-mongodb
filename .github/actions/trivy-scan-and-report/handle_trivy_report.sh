@@ -42,17 +42,12 @@ declare -A FIXABLE_COUNT
 
 SEVERITY_LEVELS=("CRITICAL" "HIGH" "MEDIUM" "LOW" "UNKNOWN")
 for SEVERITY in "${SEVERITY_LEVELS[@]}"; do
-  echo $SEVERITY
-  echo $(get_vulnerabilities "$SEVERITY")
   VULN["$SEVERITY"]=$(get_vulnerabilities "$SEVERITY")
-  echo $(count "${VULN["$SEVERITY"]}")
   VULN_COUNT["$SEVERITY"]=$(count "${VULN["$SEVERITY"]}")
-  echo VULN_COUNT["$SEVERITY"]
   FIXABLE["$SEVERITY"]=$(get_fixable "${VULN["$SEVERITY"]}")
   FIXABLE_COUNT["$SEVERITY"]=$(count "${FIXABLE["$SEVERITY"]}")
 done
 
-echo "VULN_COUNT[CRITICAL]=${VULN_COUNT[\"CRITICAL\"]}"
 echo "VULN_COUNT[CRITICAL]=${VULN_COUNT["CRITICAL"]}"
 echo "VULN_COUNT[HIGH]=${VULN_COUNT["HIGH"]}"
 echo "VULN_COUNT[MEDIUM]=${VULN_COUNT["MEDIUM"]}"
@@ -100,11 +95,11 @@ echo "Congrats! The image does not have any blocking vulnerabilities"
 echo
 echo "Non-blocking vulnerabilities"
 echo "==============================================================================================================================================="
-if [ $BLOCKING_LEVEL -le 0 ]; then echo "Critical: ${COUNT['CRITICAL']}"; fi
-if [ $BLOCKING_LEVEL -le 1 ]; then echo "High:     ${COUNT['HIGH']}"; fi
-if [ $BLOCKING_LEVEL -le 2 ]; then echo "Medium:   ${COUNT['MEDIUM']}"; fi
-if [ $BLOCKING_LEVEL -le 3 ]; then echo "Low:      ${COUNT['LOW']}"; fi
-if [ $BLOCKING_LEVEL -le 4 ]; then echo "Unknown:  ${COUNT['UNKNOWN']}"; fi
+if [ $BLOCKING_LEVEL -le 0 ]; then echo "Critical: ${VULN_COUNT['CRITICAL']}"; fi
+if [ $BLOCKING_LEVEL -le 1 ]; then echo "High:     ${VULN_COUNT['HIGH']}"; fi
+if [ $BLOCKING_LEVEL -le 2 ]; then echo "Medium:   ${VULN_COUNT['MEDIUM']}"; fi
+if [ $BLOCKING_LEVEL -le 3 ]; then echo "Low:      ${VULN_COUNT['LOW']}"; fi
+if [ $BLOCKING_LEVEL -le 4 ]; then echo "Unknown:  ${VULN_COUNT['UNKNOWN']}"; fi
 echo 
 echo "Aggregated vulnerability list"
 echo "==============================================================================================================================================="
