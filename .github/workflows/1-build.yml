@@ -13,9 +13,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    
-    # - name: Extract version from branch name
-    #   run: echo "MONGO_VERSION=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -27,14 +24,12 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and push to GHCR
+    - name: Build and push temp image to GHCR
       uses: docker/build-push-action@v6
       with:
         push: true
-        #load: true
         build-args: MONGO_VERSION=${{ github.ref_name }}
         tags: ghcr.io/${{ github.actor }}/mongodb:${{ github.ref_name }}
-        #target: test
         context: .
         cache-from: type=gha
         cache-to: type=gha,mode=max
