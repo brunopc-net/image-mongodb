@@ -7,15 +7,22 @@ jobs:
   mongo_version:
     runs-on: ubuntu-latest
     steps:
-      # - name: Extract version from branch name
-      #   run: echo "MONGO_VERSION=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-
       - name: Check MONGO_VERSION
         run: |
           if [[ ! "${{ github.ref_name }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "❌ Branch name is not X.X.X ["${{ github.ref_name }}"]"
             exit 1
           fi
+          
+  ghcr-login:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Login to ghcr.io registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
   docker-login:
     runs-on: ubuntu-latest

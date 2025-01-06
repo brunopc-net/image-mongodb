@@ -25,5 +25,12 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Push image to Docker Hub
-        run: docker push ghcr.io/${{ github.actor }}/mongodb:${{ github.ref_name }}
+      - name: Push image from ghcr.io to Docker Hub
+        run: |
+          IMG_NAME=mongodb
+          GHCR_IMG=ghcr.io/${{ github.actor }}/$IMG_NAME:${{ github.ref_name }}
+          DOCKER_IMG=${{ vars.DOCKERHUB_USERNAME }}/$IMG_NAME:${{ github.ref_name }}
+
+          docker pull $GHCR_IMG
+          docker tag $GHCR_IMG $DOCKER_IMG
+          docker push $DOCKER_IMG
