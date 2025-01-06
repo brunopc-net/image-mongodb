@@ -5,8 +5,11 @@ on:
     branches-ignore:
       - 'latest'
 
-jobs:
+permissions:
+  contents: read
+  packages: write
 
+jobs:
   validate:
     uses: ./.github/workflows/0-validate.yml
     secrets: inherit
