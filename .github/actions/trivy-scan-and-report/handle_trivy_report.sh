@@ -48,11 +48,6 @@ for SEVERITY in "${SEVERITY_LEVELS[@]}"; do
   FIXABLE_COUNT["$SEVERITY"]=$(count "${FIXABLE["$SEVERITY"]}")
 done
 
-echo "VULN_COUNT[CRITICAL]=${VULN_COUNT["CRITICAL"]}"
-echo "VULN_COUNT[HIGH]=${VULN_COUNT["HIGH"]}"
-echo "VULN_COUNT[MEDIUM]=${VULN_COUNT["MEDIUM"]}"
-echo "VULN_COUNT[LOW]=${VULN_COUNT["LOW"]}"
-
 # Variable to store all blocking vulnerabilities
 BLOCK_VULN=""
 BLOCK_VULN_COUNT=0
@@ -95,17 +90,17 @@ echo "Congrats! The image does not have any blocking vulnerabilities"
 echo
 echo "Non-blocking vulnerabilities"
 echo "==============================================================================================================================================="
-if [ $BLOCKING_LEVEL -le 0 ]; then echo "Critical: ${VULN_COUNT['CRITICAL']}"; fi
-if [ $BLOCKING_LEVEL -le 1 ]; then echo "High:     ${VULN_COUNT['HIGH']}"; fi
-if [ $BLOCKING_LEVEL -le 2 ]; then echo "Medium:   ${VULN_COUNT['MEDIUM']}"; fi
-if [ $BLOCKING_LEVEL -le 3 ]; then echo "Low:      ${VULN_COUNT['LOW']}"; fi
-if [ $BLOCKING_LEVEL -le 4 ]; then echo "Unknown:  ${VULN_COUNT['UNKNOWN']}"; fi
+if [ $BLOCKING_LEVEL -le 1 ]; then echo "Critical: ${VULN_COUNT['CRITICAL']}"; fi
+if [ $BLOCKING_LEVEL -le 2 ]; then echo "High:     ${VULN_COUNT['HIGH']}"; fi
+if [ $BLOCKING_LEVEL -le 3 ]; then echo "Medium:   ${VULN_COUNT['MEDIUM']}"; fi
+if [ $BLOCKING_LEVEL -le 4 ]; then echo "Low:      ${VULN_COUNT['LOW']}"; fi
+if [ $BLOCKING_LEVEL -le 5 ]; then echo "Unknown:  ${VULN_COUNT['UNKNOWN']}"; fi
 echo 
 echo "Aggregated vulnerability list"
 echo "==============================================================================================================================================="
-if [ $BLOCKING_LEVEL -le 0 ]; then print "${VULN['CRITICAL']}"; fi
-if [ $BLOCKING_LEVEL -le 1 ]; then print "${VULN['HIGH']}"; fi
-if [ $BLOCKING_LEVEL -le 2 ]; then print "${VULN['MEDIUM']}"; fi
-if [ $BLOCKING_LEVEL -le 3 ]; then print "${VULN['LOW']}"; fi
-if [ $BLOCKING_LEVEL -le 4 ]; then print "${VULN['UNKNOWN']}"; fi
+if [ $BLOCKING_LEVEL -le 1 ]; then print "${VULN['CRITICAL']}"; fi
+if [ $BLOCKING_LEVEL -le 2 ]; then print "${VULN['HIGH']}"; fi
+if [ $BLOCKING_LEVEL -le 3 ]; then print "${VULN['MEDIUM']}"; fi
+if [ $BLOCKING_LEVEL -le 4 ]; then print "${VULN['LOW']}"; fi
+if [ $BLOCKING_LEVEL -le 5 ]; then print "${VULN['UNKNOWN']}"; fi
 echo "==============================================================================================================================================="
