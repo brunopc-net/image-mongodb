@@ -48,6 +48,12 @@ for SEVERITY in "${SEVERITY_LEVELS[@]}"; do
   FIXABLE_COUNT["$SEVERITY"]=$(count "${FIXABLE["$SEVERITY"]}")
 done
 
+echo "VULN_COUNT[CRITICAL]=${VULN_COUNT[\"CRITICAL\"]}"
+echo "VULN_COUNT[CRITICAL]=${VULN_COUNT["CRITICAL"]}"
+echo "VULN_COUNT[HIGH]=${VULN_COUNT["HIGH"]}"
+echo "VULN_COUNT[MEDIUM]=${VULN_COUNT[MEDIUM"]}"
+echo "VULN_COUNT[LOW]=${VULN_COUNT["LOW"]}"
+
 # Variable to store all blocking vulnerabilities
 BLOCK_VULN=""
 BLOCK_VULN_COUNT=0
