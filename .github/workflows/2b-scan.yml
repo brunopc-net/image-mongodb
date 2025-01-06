@@ -18,6 +18,6 @@ jobs:
         run: docker load -i mongodb-image.tar
         
       - name: Run Trivy Scan
-        uses: ./.github/actions/trivy-scan-and-report.yml
+        uses: ./.github/actions/trivy-scan-and-report
         with:
           image-ref: mongodb
