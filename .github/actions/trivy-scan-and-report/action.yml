@@ -38,6 +38,7 @@ runs:
       run: |
         ls ./
         ls ../
+        ls ./.github/actions/
         chmod +x ./handle_trivy_report.sh
         ./handle_trivy_report.sh ${{ inputs.blocking-level }}
       shell: bash
