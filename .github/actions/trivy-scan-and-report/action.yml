@@ -33,7 +33,6 @@ runs:
 
     - name: Handle trivy vulnerability report
       run: |
-        ls ./
         chmod +x .github/actions/trivy-scan-and-report/handle_trivy_report.sh
-        .github/actions/trivy-scan-and-report/handle_trivy_report.sh ${{ inputs.blocking-level }}
+        .github/actions/trivy-scan-and-report/handle_trivy_report.sh ${{ inputs.blocking-level }} ${{ inputs.report-output }}
       shell: bash
