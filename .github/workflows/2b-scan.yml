@@ -20,7 +20,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Trivy Scan
-        uses: ./.github/actions/trivy-scan-and-report
+      - name: Run CVEs scan
+        uses: ./.github/actions/cve-scan
         with:
           image-ref: mongodb
