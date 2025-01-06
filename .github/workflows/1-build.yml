@@ -34,7 +34,7 @@ jobs:
         #load: true
         build-args: MONGO_VERSION=${{ env.MONGO_VERSION }}
         tags: ghcr.io/${{ github.actor }}/mongodb:${{ env.MONGO_VERSION }}
-        target: test
+        #target: test
         context: .
         cache-from: type=gha
         cache-to: type=gha,mode=max
