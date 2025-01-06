@@ -24,7 +24,7 @@ jobs:
               -p 27017:27017 \
               --health-cmd "mongosh \
               --eval 'db.runCommand({ ping: 1 })'" \
-          ghcr.io/${{ github.actor }}/mongodb:${{ env.MONGO_VERSION }}
+          ghcr.io/${{ github.actor }}/mongodb:${{ github.ref_name }}
     
       - name: Insert document
         run: |

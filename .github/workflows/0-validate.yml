@@ -7,14 +7,13 @@ jobs:
   mongo_version:
     runs-on: ubuntu-latest
     steps:
-      - name: Extract version from branch name
-        run: echo "MONGO_VERSION=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+      # - name: Extract version from branch name
+      #   run: echo "MONGO_VERSION=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
 
       - name: Check MONGO_VERSION
         run: |
-          if [ -z "${{ env.MONGO_VERSION }}" ]; then exit 1; fi
-          if [[ ! "${{ env.MONGO_VERSION }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "❌ Branch name is not X.X.X ["${{ env.MONGO_VERSION }}"]"
+          if [[ ! "${{ github.ref_name }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Branch name is not X.X.X ["${{ github.ref_name }}"]"
             exit 1
           fi
 

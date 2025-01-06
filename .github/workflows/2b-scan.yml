@@ -23,4 +23,4 @@ jobs:
       - name: Run CVEs scan
         uses: ./.github/actions/cve-scan
         with:
-          image-ref: ghcr.io/${{ github.actor }}/mongodb:${{ env.MONGO_VERSION }}
+          image-ref: ghcr.io/${{ github.actor }}/mongodb:${{ github.ref_name }}
