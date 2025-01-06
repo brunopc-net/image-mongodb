@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Input parameters
 BLOCKING_LEVEL="$1"
