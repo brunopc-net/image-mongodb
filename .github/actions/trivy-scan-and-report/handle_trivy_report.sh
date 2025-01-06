@@ -6,6 +6,7 @@ REPORT="$2"
 
 echo "REPORT=$REPORT"
 ls -R
+cat $REPORT
 
 
 # Function to extract vulnerabilities by severity
