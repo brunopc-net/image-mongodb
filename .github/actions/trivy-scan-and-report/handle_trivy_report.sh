@@ -85,16 +85,15 @@ if [ $BLOCK_VULN_COUNT -gt 0 ]; then
   echo
   echo "$BLOCK_VULN_COUNT blocking vulnerabilities: image won't be pushed"
   echo
-  echo "Aggregated vulnerability list"
+  echo "Aggregated list"
   echo "==============================================================================================================================================="
   print "$BLOCK_VULN"
   echo "==============================================================================================================================================="
   exit 1
 fi
 
-echo "Congrats! The image does not have any blocking vulnerabilities"
 echo
-echo "Non-blocking vulnerabilities"
+echo "Congrats! No blocking vulnerabilities"
 echo "==============================================================================================================================================="
 if [ $BLOCKING_LEVEL -le 1 ]; then echo "Critical: ${VULN_COUNT['CRITICAL']}"; fi
 if [ $BLOCKING_LEVEL -le 2 ]; then echo "High:     ${VULN_COUNT['HIGH']}"; fi
@@ -102,7 +101,7 @@ if [ $BLOCKING_LEVEL -le 3 ]; then echo "Medium:   ${VULN_COUNT['MEDIUM']}"; fi
 if [ $BLOCKING_LEVEL -le 4 ]; then echo "Low:      ${VULN_COUNT['LOW']}"; fi
 if [ $BLOCKING_LEVEL -le 5 ]; then echo "Unknown:  ${VULN_COUNT['UNKNOWN']}"; fi
 echo 
-echo "Aggregated vulnerability list"
+echo "Aggregated list"
 echo "==============================================================================================================================================="
 if [ $BLOCKING_LEVEL -le 1 ]; then print "${VULN['CRITICAL']}"; fi
 if [ $BLOCKING_LEVEL -le 2 ]; then print "${VULN['HIGH']}"; fi
