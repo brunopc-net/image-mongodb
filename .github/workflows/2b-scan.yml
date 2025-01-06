@@ -20,13 +20,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Debug Repository Content
-        run: |
-          echo ============
-          ls ./.github/actions
-          echo ============
-          ls ./.github/actions/trivy-scan-and-report
-
       - name: Run Trivy Scan
         uses: ./.github/actions/trivy-scan-and-report
         with:

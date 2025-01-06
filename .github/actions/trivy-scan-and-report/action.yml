@@ -33,11 +33,6 @@ runs:
 
     - name: Handle trivy vulnerability report
       run: |
-        if [ ! -f "${{ inputs.report-output }}" ]; then
-          echo "Report does not exist. Files:"
-          ls
-          exit 1
-        fi
         chmod +x .github/actions/trivy-scan-and-report/handle_trivy_report.sh
         .github/actions/trivy-scan-and-report/handle_trivy_report.sh ${{ inputs.blocking-level }} ${{ inputs.report-output }}
       shell: bash

@@ -4,6 +4,12 @@
 BLOCKING_LEVEL="$1"
 REPORT="$2"
 
+if [ ! -f "$REPORT" ]; then
+  echo "Report does not exist. Files:"
+  ls
+  exit 1
+fi
+
 # Function to extract vulnerabilities by severity
 get_vulnerabilities() {
   jq -r "[.Results[] | .Vulnerabilities[]? | select(.Severity == \"$1\")]" "$REPORT"
