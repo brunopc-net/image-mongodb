@@ -42,6 +42,7 @@ declare -A FIXABLE_COUNT
 
 SEVERITY_LEVELS=("CRITICAL" "HIGH" "MEDIUM" "LOW" "UNKNOWN")
 for SEVERITY in "${SEVERITY_LEVELS[@]}"; do
+  echo $(get_vulnerabilities "$SEVERITY")
   VULN["$SEVERITY"]=$(get_vulnerabilities "$SEVERITY")
   echo $(count "${VULN["$SEVERITY"]}")
   VULN_COUNT["$SEVERITY"]=$(count "${VULN["$SEVERITY"]}")
