@@ -34,14 +34,3 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         platform: linux/amd64
-    
-    # - name: Save Docker image as tarball
-    #   run: docker save mongodb -o mongodb-image.tar
-
-    # - name: Cache Docker image tarball
-    #   uses: actions/cache@v4
-    #   with:
-    #     path: mongodb-image.tar
-    #     key: ${{ runner.os }}-docker-${{ github.sha }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-docker-
