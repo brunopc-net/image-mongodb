@@ -5,6 +5,8 @@ BLOCKING_LEVEL="$1"
 REPORT="$2"
 
 echo "REPORT=$REPORT"
+ls -R
+
 
 # Function to extract vulnerabilities by severity
 get_vulnerabilities() {
