@@ -19,8 +19,7 @@ jobs:
       
       - name: Debug Repository Content
         run: |
-          ls -R .github/actions || true
-          ls -R ./.github/actions
+          ls -R
 
       - name: Run Trivy Scan
         uses: ./.github/actions/trivy-scan-and-report
