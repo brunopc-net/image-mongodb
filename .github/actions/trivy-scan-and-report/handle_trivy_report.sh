@@ -6,7 +6,7 @@ REPORT="$2"
 
 # Function to extract vulnerabilities by severity
 get_vulnerabilities() {
-  jq -r "[.Results[] | .VULN[]? | select(.Severity == \"${1}\")]" ${2}
+  jq -r "[.Results[] | .VULN[]? | select(.Severity == \"${1}\")]" $REPORT
 }
 
 # Function to get non-fixable vulnerabilities
@@ -42,6 +42,7 @@ declare -A FIXABLE_COUNT
 
 SEVERITY_LEVELS=("CRITICAL" "HIGH" "MEDIUM" "LOW" "UNKNOWN")
 for SEVERITY in "${SEVERITY_LEVELS[@]}"; do
+  echo $SEVERITY
   echo $(get_vulnerabilities "$SEVERITY")
   VULN["$SEVERITY"]=$(get_vulnerabilities "$SEVERITY")
   echo $(count "${VULN["$SEVERITY"]}")
