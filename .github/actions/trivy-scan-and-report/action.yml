@@ -18,7 +18,7 @@ inputs:
         - 5 # All
     default: 3
 runs:
-  using: ubuntu-latest
+  using: composite
   steps:
     - name: Scan for vulnerabilities
       uses: aquasecurity/trivy-action@0.28.0
