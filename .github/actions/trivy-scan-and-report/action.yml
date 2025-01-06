@@ -31,9 +31,6 @@ runs:
         severity: CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN
         hide-progress: true
 
-    - name: Checkout code
-      uses: actions/checkout@v4
-
     - name: Handle trivy vulnerability report
       run: |
         chmod +x .github/actions/trivy-scan-and-report/handle_trivy_report.sh
