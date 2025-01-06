@@ -16,7 +16,13 @@ jobs:
         
       - name: Load Docker image from cached tarball
         run: docker load -i mongodb-image.tar
-        
+      
+      - name: Debug Repository Content
+        run: |
+          ls -R actions
+          ls -R .github/actions
+          ls -R ./.github/actions
+
       - name: Run Trivy Scan
         uses: ./.github/actions/trivy-scan-and-report
         with:
