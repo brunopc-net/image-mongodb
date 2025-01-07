@@ -4,9 +4,8 @@ on:
   workflow_call:
 
 jobs:
-  trivy:
+  get-blocking-vuln:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,6 +21,12 @@ jobs:
           severity: CRITICAL,HIGH
           hide-progress: true
           exit: 1
+
+  list-all-vuln:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: List all vulnerabilities
         uses: aquasecurity/trivy-action@0.28.0
