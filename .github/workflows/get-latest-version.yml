@@ -12,7 +12,11 @@ jobs:
         id: get-version
         run: |
           # Fetch MongoDB's stable version details from the API
-          LATEST_VERSION=$(curl -s https://www.mongodb.com/try/download/community | grep -oP 'mongodb-linux-x86_64-ubuntu2204-\K[0-9.]+(?=.tgz)' | head -1)
+          LATEST_VERSION=$(curl -s https://api.github.com/repos/mongodb/mongo/tags \
+            | jq -r '.[] | select(.name | test("^r[0-9]+\\.[0-9]+\\.[0-9]+$")) | .name' \
+            | head -n 1 \
+            | sed 's/^r//'
+          )
           echo "Latest stable MongoDB version: $LATEST_VERSION"
 
       - name: Checkout the Repository
