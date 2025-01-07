@@ -8,11 +8,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Fetch the Latest MongoDB Version
-        id: get-version
+      - name: Fetch the Latest MongoDB stable version
         run: |
-          # Fetch MongoDB's stable version details from the API
-          LATEST_VERSION=$(curl -s https://api.github.com/repos/mongodb/mongo/tags \
+          export LATEST_VERSION=$(curl -s https://api.github.com/repos/mongodb/mongo/tags \
             | jq -r '.[] | select(.name | test("^r[0-9]+\\.[0-9]+\\.[0-9]+$")) | .name' \
             | head -n 1 \
             | sed 's/^r//'
