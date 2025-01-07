@@ -21,17 +21,17 @@ jobs:
 
   test:
     needs: build
-    uses: ./.github/workflows/2a-test.yml
+    uses: ./.github/workflows/2a-smoke-test.yml
 
   scan-vuln-blocking:
-    name: Scan Vulnerabilities
+    name: Scan vuln - blocking
     needs: build
-    uses: ./.github/workflows/2b-scan-blocking-vuln.yml
+    uses: ./.github/workflows/2b-scan-vuln-blocking.yml
   
   scan-vuln-all:
-    name: Scan Vulnerabilities
+    name: Scan vuln - all
     needs: build
-    uses: ./.github/workflows/2c-scan-all-vuln.yml
+    uses: ./.github/workflows/2c-scan-vuln-all.yml
 
   push:
     needs: [test, scan-vuln-blocking]
