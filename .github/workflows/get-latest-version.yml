@@ -1,11 +1,15 @@
 name: Get Latest MongoDB Version
 
 on:
-  workflow_dispatch: # Allows manual trigger
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1-5" #6am every work day
+  
 
 jobs:
   get-latest-version:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/latest'
 
     steps:
       - name: Fetch the Latest MongoDB stable version
@@ -15,7 +19,7 @@ jobs:
             | head -n 1 \
             | sed 's/^r//'
           )
-          echo "::set-output name=mongo_version::$MONGO_VERSION"
+          echo "MONGO_VERSION=$MONGO_VERSION" >> $GITHUB_ENV
 
       - name: Checkout the Repository
         uses: actions/checkout@v4
@@ -28,11 +32,11 @@ jobs:
 
           # Check if the branch already exists
           if git ls-remote --heads origin $MONGO_VERSION > /dev/null; then
-            echo "Branch '$MONGO_VERSION' already exists on the remote."
+            echo "Branch ${{ env.MONGO_VERSION }} already exists on the remote."
             exit 0
           else
-            echo "Branch '$MONGO_VERSION' does not exist. Creating it..."
+            echo "Branch ${{ env.MONGO_VERSION }} does not exist. Creating it..."
             git checkout latest
-            git checkout -b $MONGO_VERSION
-            git push origin $MONGO_VERSION
+            git checkout -b ${{ env.MONGO_VERSION }}
+            git push origin ${{ env.MONGO_VERSION }}
           fi
