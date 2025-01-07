@@ -23,11 +23,17 @@ jobs:
     needs: build
     uses: ./.github/workflows/2a-test.yml
 
-  scan:
+  scan-vuln-blocking:
+    name: Scan Vulnerabilities
     needs: build
-    uses: ./.github/workflows/2b-scan.yml
+    uses: ./.github/workflows/2b-scan-blocking-vuln.yml
+  
+  scan-vuln-all:
+    name: Scan Vulnerabilities
+    needs: build
+    uses: ./.github/workflows/2c-scan-all-vuln.yml
 
   push:
-    needs: [test, scan]
+    needs: [test, scan-vuln-blocking]
     uses: ./.github/workflows/3-push.yml
     secrets: inherit
