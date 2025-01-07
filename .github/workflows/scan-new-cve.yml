@@ -1,6 +1,7 @@
 name: Scan new CVEs for published versions
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "0 6 * * 1-5" #6am every work day
 
