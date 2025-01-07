@@ -12,5 +12,25 @@ jobs:
         id: get-version
         run: |
           # Fetch MongoDB's stable version details from the API
-          LATEST_VERSION=$(curl -s "https://www.mongodb.com/api/explorer/v1" | jq -r '.stableVersions[0]')
+          LATEST_VERSION=$(curl -s https://www.mongodb.com/try/download/community | grep -oP 'mongodb-linux-x86_64-ubuntu2204-\K[0-9.]+(?=.tgz)' | head -1)
           echo "Latest stable MongoDB version: $LATEST_VERSION"
+
+      - name: Checkout the Repository
+        uses: actions/checkout@v4
+
+      - name: Check and Create a Branch
+        id: create-new-version-branch
+        run: |
+          # Fetch all branches
+          git fetch origin
+
+          # Check if the branch already exists
+          if git ls-remote --heads origin $LATEST_VERSION > /dev/null; then
+            echo "Branch '$LATEST_VERSION' already exists on the remote."
+            exit 0
+          else
+            echo "Branch '$LATEST_VERSION' does not exist. Creating it..."
+            git checkout latest
+            git checkout -b $LATEST_VERSION
+            git push origin $LATEST_VERSION
+          fi
