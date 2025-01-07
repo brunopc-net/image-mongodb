@@ -21,19 +21,17 @@ jobs:
 
   test:
     needs: build
-    uses: ./.github/workflows/2a-smoke-test.yml
+    uses: ./.github/workflows/2-test-smoke.yml
 
-  scan-vuln-blocking:
-    name: Scan vuln - blocking
+  scan-vuln-block:
     needs: build
-    uses: ./.github/workflows/2b-scan-vuln-blocking.yml
+    uses: ./.github/workflows/2-scan-vuln-block.yml
   
-  scan-vuln-all:
-    name: Scan vuln - all
+  scan-vuln-report:
     needs: build
-    uses: ./.github/workflows/2c-scan-vuln-all.yml
+    uses: ./.github/workflows/2-scan-vuln-report.yml
 
   push:
-    needs: [test, scan-vuln-blocking]
+    needs: [test, scan-vuln-block]
     uses: ./.github/workflows/3-push.yml
     secrets: inherit
