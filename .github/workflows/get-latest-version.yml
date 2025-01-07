@@ -1,0 +1,16 @@
+name: Get Latest MongoDB Version
+
+on:
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  get-latest-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fetch the Latest MongoDB Version
+        id: get-version
+        run: |
+          # Fetch MongoDB's stable version details from the API
+          LATEST_VERSION=$(curl -s "https://www.mongodb.com/api/explorer/v1" | jq -r '.stableVersions[0]')
+          echo "Latest stable MongoDB version: $LATEST_VERSION"

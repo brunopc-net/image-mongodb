@@ -11,25 +11,8 @@ permissions:
   security-events: write
 
 jobs:
-  # validate:
-  #   uses: ./.github/workflows/0-validate.yml
-  #   secrets: inherit
-
-  # build:
-  #   uses: ./.github/workflows/1-build.yml
-  #   secrets: inherit
-
-  # test:
-  #   needs: build
-  #   uses: ./.github/workflows/2-test-smoke.yml
-
   vuln-block:
     uses: ./.github/workflows/2-vuln-block.yml
   
   vuln-report:
     uses: ./.github/workflows/2-vuln-report.yml
-
-  # push:
-  #   needs: [test, vuln-block]
-  #   uses: ./.github/workflows/3-push.yml
-  #   secrets: inherit
