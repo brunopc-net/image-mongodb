@@ -23,15 +23,15 @@ jobs:
     needs: build
     uses: ./.github/workflows/2-test-smoke.yml
 
-  scan-vuln-block:
+  vuln-block:
     needs: build
-    uses: ./.github/workflows/2-scan-vuln-block.yml
+    uses: ./.github/workflows/2-vuln-block.yml
   
-  scan-vuln-report:
+  vuln-report:
     needs: build
-    uses: ./.github/workflows/2-scan-vuln-report.yml
+    uses: ./.github/workflows/2-vuln-report.yml
 
   push:
-    needs: [test, scan-vuln-block]
+    needs: [test, vuln-block]
     uses: ./.github/workflows/3-push.yml
     secrets: inherit
