@@ -10,12 +10,12 @@ jobs:
     steps:
       - name: Fetch the Latest MongoDB stable version
         run: |
-          export LATEST_VERSION=$(curl -s https://api.github.com/repos/mongodb/mongo/tags \
+          MONGO_VERSION=$(curl -s https://api.github.com/repos/mongodb/mongo/tags \
             | jq -r '.[] | select(.name | test("^r[0-9]+\\.[0-9]+\\.[0-9]+$")) | .name' \
             | head -n 1 \
             | sed 's/^r//'
           )
-          echo "Latest stable MongoDB version: $LATEST_VERSION"
+          echo "::set-output name=mongo_version::$MONGO_VERSION"
 
       - name: Checkout the Repository
         uses: actions/checkout@v4
@@ -27,12 +27,12 @@ jobs:
           git fetch origin
 
           # Check if the branch already exists
-          if git ls-remote --heads origin $LATEST_VERSION > /dev/null; then
-            echo "Branch '$LATEST_VERSION' already exists on the remote."
+          if git ls-remote --heads origin $MONGO_VERSION > /dev/null; then
+            echo "Branch '$MONGO_VERSION' already exists on the remote."
             exit 0
           else
-            echo "Branch '$LATEST_VERSION' does not exist. Creating it..."
+            echo "Branch '$MONGO_VERSION' does not exist. Creating it..."
             git checkout latest
-            git checkout -b $LATEST_VERSION
-            git push origin $LATEST_VERSION
+            git checkout -b $MONGO_VERSION
+            git push origin $MONGO_VERSION
           fi
