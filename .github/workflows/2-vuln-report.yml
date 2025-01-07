@@ -1,0 +1,29 @@
+name: Vulnerability scan
+
+on:
+  workflow_call:
+
+jobs:
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Scan for all vulnerabilities
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: image
+          image-ref: ghcr.io/${{ github.actor }}/mongodb:${{ github.ref_name }}
+          scanners: vuln
+          format: 'sarif'
+          output: cve-report.sarif
+          ignore-unfixed: false
+          severity: CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN
+          hide-progress: true
+  
+      - name: Upload report to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: cve-report.sarif
+

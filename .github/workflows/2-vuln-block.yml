@@ -1,0 +1,23 @@
+name: Vulnerability scan
+
+on:
+  workflow_call:
+
+jobs:
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Scan for blocking vulnerabilities
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: image
+          image-ref: ghcr.io/${{ github.actor }}/mongodb:${{ github.ref_name }}
+          scanners: vuln
+          format: 'table'
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+          hide-progress: true
+          exit-code: 1
