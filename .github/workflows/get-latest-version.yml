@@ -1,7 +1,10 @@
 name: Get Latest MongoDB Version
 
 on:
-  workflow_dispatch: # Allows manual trigger
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1-5" #6am every work day
+  
 
 jobs:
   get-latest-version:
@@ -28,7 +31,7 @@ jobs:
 
           # Check if the branch already exists
           if git ls-remote --heads origin $MONGO_VERSION > /dev/null; then
-            echo "Branch '$MONGO_VERSION' already exists on the remote."
+            echo "Branch $MONGO_VERSION already exists on the remote."
             exit 0
           else
             echo "Branch '$MONGO_VERSION' does not exist. Creating it..."
