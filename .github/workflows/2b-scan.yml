@@ -4,8 +4,7 @@ on:
   workflow_call:
 
 permissions:
-  contents: read
-  packages: write
+  security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
 
 jobs:
   get-blocking-vuln:
@@ -24,7 +23,7 @@ jobs:
           ignore-unfixed: true
           severity: CRITICAL,HIGH
           hide-progress: true
-          exit: 1
+          exit-code: 1
 
   list-all-vuln:
     runs-on: ubuntu-latest
