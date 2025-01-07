@@ -3,24 +3,26 @@ name: Vulnerability scan
 on:
   workflow_call:
 
-permissions:
-  security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-
 jobs:
-  blocking-vuln:
+  trivy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Scan blocking vulnerabilities
+      - name: List all vulnerabilities
         uses: aquasecurity/trivy-action@0.28.0
         with:
           scan-type: image
           image-ref: ghcr.io/${{ github.actor }}/mongodb:${{ github.ref_name }}
           scanners: vuln
-          format: 'table'
-          ignore-unfixed: true
-          severity: CRITICAL,HIGH
+          format: 'sarif'
+          output: cve-report.sarif
+          ignore-unfixed: false
+          severity: CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN
           hide-progress: true
-          exit-code: 1
+  
+      - name: Upload scan to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: cve-report.sarif
